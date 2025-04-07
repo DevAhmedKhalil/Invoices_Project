@@ -1,7 +1,7 @@
 @extends('layouts.master')
 
 @section('title')
-    قائمة الفواتير
+    الاقسام
 @endsection
 
 @section('css')
@@ -13,31 +13,64 @@
     <link href="{{URL::asset('assets/plugins/datatable/css/responsive.dataTables.min.css')}}" rel="stylesheet">
     <link href="{{URL::asset('assets/plugins/select2/css/select2.min.css')}}" rel="stylesheet">
 @endsection
+
 @section('page-header')
     <!-- breadcrumb -->
     <div class="breadcrumb-header justify-content-between">
         <div class="my-auto">
             <div class="d-flex">
-                <h4 class="content-title mb-0 my-auto">الفواتير</h4><span class="text-muted mt-1 tx-13 mr-2 mb-0">/ قائمة الفواتير</span>
+                <h4 class="content-title mb-0 my-auto">الاعدادات</h4><span
+                        class="text-muted mt-1 tx-13 mr-2 mb-0">/ الاقسام</span>
             </div>
         </div>
-        {{--					<div class="d-flex my-xl-auto right-content"></div>--}}
     </div>
+
+    {{--    @if (session('error'))--}}
+    {{--        <div class="alert alert-danger">--}}
+    {{--            {{ session('error') }}--}}
+    {{--        </div>--}}
+    {{--    @elseif (session('success'))--}}
+    {{--        <div class="alert alert-success">--}}
+    {{--            {{ session('success') }}--}}
+    {{--        </div>--}}
+    {{--    @endif--}}
+
+
     <!-- breadcrumb -->
 @endsection
 @section('content')
     <!-- row -->
     <div class="row">
-        <!-- row opened -->
+
+        @if(session()->has('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <strong>{{ session()->get('success') }}</strong>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        @endif
+
+        @if(session()->has('error'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <strong>{{ session()->get('error') }}</strong>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        @endif
+
+
         <!--div-->
         <div class="col-xl-12">
             <div class="card mg-b-20">
                 <div class="card-header pb-0">
                     <div class="d-flex justify-content-between">
-                        <h4 class="card-title mg-b-0">SIMPLE TABLE</h4>
-                        <i class="mdi mdi-dots-horizontal text-gray"></i>
+                        <div class="col-sm-6 col-md-4 col-xl-3">
+                            <a class="modal-effect btn btn-outline-success btn-block" data-effect="effect-scale"
+                               data-toggle="modal" href="#modaldemo8">اضافة قسم</a>
+                        </div>
                     </div>
-                    <p class="tx-12 tx-gray-500 mb-2">Example of Valex Simple Table. <a href="">Learn more</a></p>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -45,17 +78,9 @@
                             <thead>
                             <tr>
                                 <th class="border-bottom-0">#</th>
-                                <th class="border-bottom-0">رقم الفاتورة</th>
-                                <th class="border-bottom-0">تاريخ الفاتورة</th>
-                                <th class="border-bottom-0">تاريخ الاستحقاق</th>
-                                <th class="border-bottom-0">المنتج</th>
-                                <th class="border-bottom-0">القسم</th>
-                                <th class="border-bottom-0">الخصم</th>
-                                <th class="border-bottom-0">نسبة الضريبة</th>
-                                <th class="border-bottom-0">قيمة الضريبة</th>
-                                <th class="border-bottom-0">الإجمالي</th>
-                                <th class="border-bottom-0">الحالة</th>
-                                <th class="border-bottom-0">ملاحظات</th>
+                                <th class="border-bottom-0">اسم القسم</th>
+                                <th class="border-bottom-0">الوصف</th>
+                                <th class="border-bottom-0">العمليات</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -64,37 +89,13 @@
                                     <div class="sticky-cell">2</div>
                                 </td>
                                 <td>
-                                    <div class="sticky-cell">INV-002</div>
+                                    <div class="sticky-cell">قسم 2</div>
                                 </td>
                                 <td>
-                                    <div class="sticky-cell">2025-04-02</div>
+                                    <div class="sticky-cell"></div>
                                 </td>
                                 <td>
-                                    <div class="sticky-cell">2025-04-15</div>
-                                </td>
-                                <td>
-                                    <div class="sticky-cell">Product B</div>
-                                </td>
-                                <td>
-                                    <div class="sticky-cell">Section B</div>
-                                </td>
-                                <td>
-                                    <div class="sticky-cell">10%</div>
-                                </td>
-                                <td>
-                                    <div class="sticky-cell">15%</div>
-                                </td>
-                                <td>
-                                    <div class="sticky-cell">150.00</div>
-                                </td>
-                                <td>
-                                    <div class="sticky-cell">1650.00</div>
-                                </td>
-                                <td>
-                                    <div class="sticky-cell">Unpaid</div>
-                                </td>
-                                <td>
-                                    <div class="sticky-cell">Pending</div>
+                                    <div class="sticky-cell">عمليه 2</div>
                                 </td>
                                 <td>
                                     <a href="#" class="btn btn-info btn-sm">عرض</a>
@@ -106,6 +107,49 @@
                         </table>
                     </div>
                 </div>
+
+                <!-- Basic modal -->
+                <div class="modal" id="modaldemo8">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content modal-content-demo">
+                            <div class="modal-header">
+                                <h6 class="modal-title">اضافة قسم</h6>
+                                <button aria-label="Close" class="close" data-dismiss="modal"
+                                        type="button"><span
+                                            aria-hidden="true">&times;</span></button>
+                            </div>
+
+                            <form action="{{ route('sections.store') }}" method="post">
+                                {{ csrf_field() }}
+
+                                <div class="modal-body">
+
+                                    <div class="form-group">
+                                        <label for="exampleInputEmail1">اسم القسم</label>
+                                        <input type="text" class="form-control" id="section_name"
+                                               name="section_name"
+                                               required>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="exampleFormControlTextarea1">ملاحظات</label>
+                                        <textarea class="form-control" id="description" name="description"
+                                                  rows="3"></textarea>
+                                    </div>
+
+                                </div>
+                                <div class="modal-footer">
+                                    <button class="btn ripple btn-primary" type="submit">تاكيد</button>
+                                    <button class="btn ripple btn-secondary" data-dismiss="modal" type="button">
+                                        اغلاق
+                                    </button>
+                                </div>
+
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <!-- End Basic modal -->
             </div>
             <!--/div-->
             <!-- row closed -->
@@ -134,4 +178,6 @@
     <script src="{{URL::asset('assets/plugins/datatable/js/responsive.bootstrap4.min.js')}}"></script>
     <!--Internal  Datatable js -->
     <script src="{{URL::asset('assets/js/table-data.js')}}"></script>
+    <!-- Internal Modal js-->
+    <script src="{{URL::asset('assets/js/modal.js')}}"></script>
 @endsection

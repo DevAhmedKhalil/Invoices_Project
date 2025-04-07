@@ -1,4 +1,4 @@
-/* ###### 7.5 Invoice  ###### */
+/* ###### 7.5 invoices  ###### */
 
 .main-content-left-invoice {
   display: block;
@@ -102,8 +102,8 @@
 
   .selected {
     background-color: $gray-100;
-    border-top-color:$border;
-    border-bottom-color:$border;
+    border-top-color: $border;
+    border-bottom-color: $border;
     border-left-color: $primary;
 
     &:first-child {
@@ -111,9 +111,11 @@
     }
   }
 }
-.card-invoice hr{
-	border-top:0 !important;
+
+.card-invoice hr {
+  border-top: 0 !important;
 }
+
 @media (min-width: 992px) {
   .main-invoice-list {
     height: calc(100% - 65px);
