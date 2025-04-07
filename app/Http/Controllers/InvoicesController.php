@@ -12,7 +12,8 @@ class InvoicesController extends Controller
      */
     public function index()
     {
-        //
+//        echo "Hello World";
+        return view('invoices.invoices');
     }
 
     /**
