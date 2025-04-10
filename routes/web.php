@@ -7,19 +7,15 @@ use App\Http\Controllers\SectionsController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('index');
 });
 
-
 Auth::routes();
-//Auth::routes(['register' => false]);
 
 Route::get('/home', [HomeController::class, 'index'])->name('home');
-
 
 Route::resource('invoices', InvoicesController::class);
 
 Route::resource('sections', SectionsController::class);
-
 
 Route::get('/{page}', [AdminController::class, 'index']); // This must be the last route
