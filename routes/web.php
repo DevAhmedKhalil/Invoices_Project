@@ -5,20 +5,38 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InvoicesController;
 use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\SectionsController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
+// 🚪 Default route (when user visits "/")
+// If user is logged in, redirect to /home
+// If not, redirect to /login page
 Route::get('/', function () {
-    return view('index');
+    if (Auth::check()) {
+        return redirect('/home');
+    } else {
+        return redirect('/login');
+    }
 });
 
+// 🔐 Authentication routes (login, register, logout, etc.)
 Auth::routes();
 
-Route::get('/home', [HomeController::class, 'index'])->name('home');
+// 🔒 All routes inside this group require authentication
+Route::middleware('auth')->group(function () {
 
-Route::resource('invoices', InvoicesController::class);
+    // 🏠 Home/dashboard page after login
+    Route::get('/home', [HomeController::class, 'index'])->name('home');
 
-Route::resource('sections', SectionsController::class);
+    // 📄 Invoice management (CRUD)
+    Route::resource('invoices', InvoicesController::class);
 
-Route::resource('products', ProductsController::class);
+    // 🧩 Section/category management (CRUD)
+    Route::resource('sections', SectionsController::class);
 
-Route::get('/{page}', [AdminController::class, 'index']); // This must be the last route
+    // 📦 Product management (CRUD)
+    Route::resource('products', ProductsController::class);
+
+    // 🧑‍💼 Admin panel or dynamic pages
+    Route::get('/{page}', [AdminController::class, 'index']);
+});
