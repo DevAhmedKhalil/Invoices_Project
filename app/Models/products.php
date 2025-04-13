@@ -11,4 +11,11 @@ class products extends Model
         'section_id',
         'description',
     ];
+
+
+    public function section(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(sections::class, 'section_id');
+    }
+
 }
