@@ -37,6 +37,8 @@ Route::middleware('auth')->group(function () {
     // 📦 Product management (CRUD)
     Route::resource('products', ProductsController::class);
 
+    Route::get('/section/{id}', [InvoicesController::class, 'getProducts']);
+
     // 🧑‍💼 Admin panel or dynamic pages
     Route::get('/{page}', [AdminController::class, 'index']);
 });

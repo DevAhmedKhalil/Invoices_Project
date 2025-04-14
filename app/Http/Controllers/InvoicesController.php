@@ -3,10 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Models\invoices;
+use App\Models\products;
+use App\Models\sections;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class InvoicesController extends Controller
 {
+
+    public function getProducts($id)
+    {
+        // Return products for a specific section via AJAX (used in dynamic dropdowns)
+        $products = DB::table("products")->where("section_id", $id)->pluck("product_name", "id");
+        return json_encode($products);
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -21,7 +32,9 @@ class InvoicesController extends Controller
      */
     public function create()
     {
-        //
+        $sections = sections::all();
+        $products = products::all();
+        return view('invoices.add_invoice', compact('sections', 'products'));
     }
 
     /**
