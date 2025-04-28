@@ -11,7 +11,7 @@ return new class extends Migration {
     public function up()
     {
         Schema::create('invoices', callback: function (Blueprint $table) {
-            $table->increments('id'); // المعرف الرئيسي للفاتورة (رقم تلقائي)
+            $table->bigIncrements('id'); // المعرف الرئيسي للفاتورة (رقم تلقائي)
             $table->string('invoice_number'); // رقم الفاتورة
             $table->date('invoice_date'); // تاريخ إصدار الفاتورة
             $table->date('due_date'); // تاريخ الاستحقاق
