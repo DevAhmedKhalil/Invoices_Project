@@ -75,6 +75,13 @@
                                                     {{ __('تسجيل الدخول') }}
                                                 </button>
                                             </form>
+                                            <div class="text-center mt-4">
+                                                <a href="{{ route('register') }}"
+                                                   class="btn btn-outline-primary btn-block btn-hover">
+                                                    <i class="fas fa-user-plus ml-2"></i>
+                                                    إنشاء حساب جديد
+                                                </a>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
