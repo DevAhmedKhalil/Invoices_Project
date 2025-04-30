@@ -22,6 +22,8 @@ Route::get('/', function () {
 // 🔐 Authentication routes (login, register, logout, etc.)
 Auth::routes();
 
+Route::get('/sections/{section_id}/products', [ProductsController::class, 'getProductsBySection'])->name('sections.products');
+
 // 🔒 All routes inside this group require authentication
 Route::middleware('auth')->group(function () {
 
@@ -29,13 +31,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/home', [HomeController::class, 'index'])->name('home');
 
     // 📄 Invoice management (CRUD)
-    Route::resource('invoices', InvoicesController::class);
+    Route::resource('invoice', InvoicesController::class);
 
     // 🧩 Section/category management (CRUD)
-    Route::resource('sections', SectionsController::class);
+    Route::resource('section', SectionsController::class);
 
     // 📦 Product management (CRUD)
-    Route::resource('products', ProductsController::class);
+    Route::resource('product', ProductsController::class);
 
     Route::get('/section/{id}', [InvoicesController::class, 'getProducts']);
 

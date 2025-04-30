@@ -50,7 +50,7 @@ License        :   Licensed under ThemeForest License
 36. Chat
 37 Contacts
 38. Error
-39. invoices
+39. invoice
 40. Mail
 41. Profile
 42. Background
@@ -25569,7 +25569,7 @@ input.parsley-error:focus, textarea.parsley-error:focus, input.parsley-success:f
     height: 30%;
     width: 30%; } }
 
-/* ###### 7.5 invoices  ###### */
+/* ###### 7.5 invoice  ###### */
 .main-content-left-invoice {
   display: block;
   padding: 0; }

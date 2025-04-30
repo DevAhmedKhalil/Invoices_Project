@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class invoices_details extends Model
+class invoicesDetails extends Model
 {
     //
 }

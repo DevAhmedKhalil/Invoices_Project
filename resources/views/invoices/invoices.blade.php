@@ -36,7 +36,7 @@
                     <div class="d-flex justify-content-center">
                         <div class="">
                             <a class="btn btn-outline-primary btn-block"
-                               href="{{ route('invoices.create') }}">
+                               href="{{ route('invoice.create') }}">
                                 اضافة فاتورة
                             </a>
                         </div>

@@ -119,7 +119,7 @@
                             </button>
                         </div>
 
-                        <form action="{{route('products.store')}}" method="post">
+                        <form action="{{route('product.store')}}" method="post">
                             {{csrf_field()}}
                             <div class="modal-body">
                                 <div class="form-group">
@@ -158,7 +158,7 @@
                  aria-labelledby="exampleModalLabel"
                  aria-hidden="true">
                 <div class="modal-dialog" role="document">
-                    <form action="{{ route('products.update', $product->id) }}" id="editForm" method="post">
+                    <form action="product/update" id="editForm" method="post">
                         {{ method_field('patch') }}
                         {{ csrf_field() }}
                         <div class="modal-content">
@@ -208,7 +208,7 @@
                             <button aria-label="Close" class="close" data-dismiss="modal"
                                     type="button"><span aria-hidden="true">&times;</span></button>
                         </div>
-                        <form action="{{ route('products.destroy', $product->id) }}" id="deleteForm" method="post">
+                        <form action="product/update" id="deleteForm" method="post">
                             {{method_field('delete')}}
                             {{csrf_field()}}
                             <div class="modal-body">
@@ -268,7 +268,7 @@
             modal.find('.modal-body #description').val(description)
             modal.find('.modal-body #edit_section_id').val(section_id) // 👈 جديد
 
-            $('#editForm').attr('action', '/products/' + id)
+            $('#editForm').attr('action', '/product/' + id)
         })
     </script>
 
@@ -282,7 +282,7 @@
             modal.find('.modal-body #id').val(id);
             modal.find('.modal-body #product_name').val(product_name);
 
-            $('#deleteForm').attr('action', '/products/' + id)
+            $('#deleteForm').attr('action', '/product/' + id)
         })
     </script>
 

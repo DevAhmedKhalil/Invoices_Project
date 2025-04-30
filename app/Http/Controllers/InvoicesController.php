@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\invoices;
-use App\Models\products;
-use App\Models\sections;
+use App\Models\Invoice;
+use App\Models\Product;
+use App\Models\Section;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -13,8 +13,8 @@ class InvoicesController extends Controller
 
     public function getProducts($id)
     {
-        // Return products for a specific section via AJAX (used in dynamic dropdowns)
-        $products = DB::table("products")->where("section_id", $id)->pluck("product_name", "id");
+        // Return product for a specific section via AJAX (used in dynamic dropdowns)
+        $products = DB::table("products")->where("section_id", $id)->pluck("proruct_name", "id");
         return json_encode($products);
     }
 
@@ -32,9 +32,13 @@ class InvoicesController extends Controller
      */
     public function create()
     {
-        $sections = sections::all();
-        $products = products::all();
-        return view('invoices.add_invoice', compact('sections', 'products'));
+//        $section = section::all();
+//        $product = product::all();
+
+        // Use eager loading to optimize queries
+        $sections = Section::with('product')->get(); // Assuming Section model has product relationship
+
+        return view('invoices.add_invoice', compact('sections'));
     }
 
     /**
@@ -48,7 +52,7 @@ class InvoicesController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(invoices $invoices)
+    public function show(Invoice $invoices)
     {
         //
     }
@@ -56,7 +60,7 @@ class InvoicesController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(invoices $invoices)
+    public function edit(Invoice $invoices)
     {
         //
     }
@@ -64,7 +68,7 @@ class InvoicesController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, invoices $invoices)
+    public function update(Request $request, Invoice $invoices)
     {
         //
     }
@@ -72,7 +76,7 @@ class InvoicesController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(invoices $invoices)
+    public function destroy(Invoice $invoices)
     {
         //
     }

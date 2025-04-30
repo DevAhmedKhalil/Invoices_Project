@@ -121,8 +121,8 @@
           'l' for the period label (long or short form depending on the compact setting), or
           '{pd}' where p is as above and d is '1' for the units digit, '10' for the tens digit,
           '100' for the hundreds digit, or '1000' for the thousands digit.</p>
-          <p>If you need to exclude entire sections when the period value is zero and
-          you have specified the period as optional, surround these sections with
+          <p>If you need to exclude entire section when the period value is zero and
+          you have specified the period as optional, surround these section with
           '{p<}' and '{p>}', where p is the same as above.</p>
           <p>Your layout can just be simple text, or can contain HTML markup as well.</p>
          @example layout: '{d<}{dn} {dl}{d>} {hnn}:{mnn}:{snn}'

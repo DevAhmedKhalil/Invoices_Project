@@ -48,7 +48,7 @@
                     </svg>
                     <span class="side-menu__label">الفواتير</span><i class="angle fe fe-chevron-down"></i></a>
                 <ul class="slide-menu">
-                    <li><a class="slide-item" href="{{ url('/' . $page='invoices') }}">قائمة الفواتير</a></li>
+                    <li><a class="slide-item" href="{{ url('/' . $page='invoice') }}">قائمة الفواتير</a></li>
                     <li><a class="slide-item" href="{{ url('/' . $page='chart-flot') }}">الفواتير المدفوعة</a></li>
                     <li><a class="slide-item" href="{{ url('/' . $page='chart-charts') }}">الفواتير الغير مدفوعة</a>
                     </li>
@@ -111,8 +111,8 @@
                     </svg>
                     <span class="side-menu__label">الاعدادات</span><i class="angle fe fe-chevron-down"></i></a>
                 <ul class="slide-menu">
-                    <li><a class="slide-item" href="{{ url('/' . $page='sections') }}">الاقسام</a></li>
-                    <li><a class="slide-item" href="{{ url('/' . $page='products') }}">المنتجات</a></li>
+                    <li><a class="slide-item" href="{{ url('/' . $page='section') }}">الاقسام</a></li>
+                    <li><a class="slide-item" href="{{ url('/' . $page='product') }}">المنتجات</a></li>
                 </ul>
             </li>
 

@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\products;
-use App\Models\sections;
+use App\Models\Product;
+use App\Models\Section;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\Rule;
@@ -14,10 +14,17 @@ class ProductsController extends Controller
     /**
      * Display a listing of the resource.
      */
+
+    public function getProductsBySection($section_id)
+    {
+        $products = Product::where('section_id', $section_id)->pluck('product_name', 'id');
+        return response()->json($products);
+    }
+
     public function index()
     {
-        $sections = sections::all();
-        $products = products::all();
+        $sections = Section::all();
+        $products = Product::all();
         return view('products.products', compact('sections', 'products'));
     }
 
@@ -55,7 +62,7 @@ class ProductsController extends Controller
 
         try {
             // 2- Create a new product using the validated data.
-            products::create([
+            Product::create([
                 'product_name' => $validatedData['product_name'],
                 'section_id' => $validatedData['section_id'],
                 'description' => $validatedData['description'] ?? null,
@@ -68,13 +75,13 @@ class ProductsController extends Controller
             Session::flash('error', 'حدث خطأ أثناء إضافة المنتج، يرجى المحاولة لاحقاً');
         }
 
-        return redirect('/products');
+        return redirect('/product');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(products $products)
+    public function show(Product $products)
     {
         //
     }
@@ -82,9 +89,29 @@ class ProductsController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(products $products)
+    public function edit($id)
     {
-        //
+        return Product::findOrFail($id);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy($id)
+    {
+        $product = Product::findOrFail($id);
+
+        try {
+            $product->delete();
+
+            Session::flash('success', 'تم حذف المنتج بنجاح');
+
+        } catch (\Exception $e) {
+            // If an error occurs, flash an error message.
+            Session::flash('error', 'حدث خطأ أثناء إضافة المنتج، يرجى المحاولة لاحقاً');
+        }
+
+        return redirect()->back();
     }
 
     /**
@@ -111,7 +138,7 @@ class ProductsController extends Controller
         ]);
 
         // 2- Find the specific product to update
-        $product = products::findOrFail($id);
+        $product = Product::findOrFail($id);
 
         try {
             // 3- Update with validated data
@@ -125,26 +152,6 @@ class ProductsController extends Controller
             Session::flash('error', 'حدث خطأ أثناء إضافة المنتج، يرجى المحاولة لاحقاً');
         }
 
-        return redirect('/products');
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy($id)
-    {
-        $product = products::findOrFail($id);
-
-        try {
-            $product->delete();
-
-            Session::flash('success', 'تم حذف المنتج بنجاح');
-
-        } catch (\Exception $e) {
-            // If an error occurs, flash an error message.
-            Session::flash('error', 'حدث خطأ أثناء إضافة المنتج، يرجى المحاولة لاحقاً');
-        }
-
-        return redirect()->back();
+        return redirect('/product');
     }
 }

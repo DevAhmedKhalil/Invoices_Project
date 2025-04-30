@@ -45,7 +45,7 @@
         <div class="col-lg-12 col-md-12">
             <div class="card">
                 <div class="card-body">
-                    <form action="{{ route('invoices.store') }}" method="post" enctype="multipart/form-data"
+                    <form action="{{ route('invoice.store') }}" method="post" enctype="multipart/form-data"
                           autocomplete="off">
                         {{ csrf_field() }}
                         {{-- 1 --}}
@@ -218,28 +218,29 @@
 
     <script>
         $(document).ready(function () {
-
             $('select[name="Section"]').on('change', function () {
-                var SectionId = $(this).val();
-                if (SectionId) {
+                var sectionId = $(this).val();
+                if (sectionId) {
                     $.ajax({
-                        url: "{{ URL::to('section') }}/" + SectionId,
+                        url: "/sections/" + sectionId + "/products",
                         type: "GET",
                         dataType: "json",
                         success: function (data) {
                             $('select[name="product"]').empty();
                             $.each(data, function (key, value) {
-                                $('select[name="product"]').append('<option value="' +
-                                    value + '">' + value + '</option>');
+                                $('select[name="product"]').append(
+                                    '<option value="' + key + '">' + value + '</option>'
+                                );
                             });
                         },
+                        error: function (xhr) {
+                            console.log('Error:', xhr.responseText);
+                        }
                     });
-
                 } else {
-                    console.log('AJAX load did not work');
+                    $('select[name="product"]').empty();
                 }
             });
-
         });
     </script>
 
@@ -271,9 +272,7 @@
                 document.getElementById("Value_VAT").value = sumq;
 
                 document.getElementById("Total").value = sumt;
-
             }
-
         }
     </script>
 

@@ -119,7 +119,7 @@
                                             aria-hidden="true">&times;</span></button>
                             </div>
 
-                            <form action="{{ route('sections.store') }}" method="post">
+                            <form action="{{ route('section.store') }}" method="post">
                                 {{ csrf_field() }}
 
                                 <div class="modal-body">
@@ -156,7 +156,7 @@
                      aria-labelledby="exampleModalLabel"
                      aria-hidden="true">
                     <div class="modal-dialog" role="document">
-                        <form action="sections/update" method="post" autocomplete="off">
+                        <form action="section/update" method="post" autocomplete="off">
                             {{ method_field('patch') }}
                             {{ csrf_field() }}
                             <div class="modal-content">
@@ -198,8 +198,8 @@
                                 <button aria-label="Close" class="close" data-dismiss="modal"
                                         type="button"><span aria-hidden="true">&times;</span></button>
                             </div>
-                            <form action="sections/destroy" method="post">
-                                {{method_field('delete')}}
+                            <form action="section/destroy" method="post">
+                                {{method_field('DELETE')}}
                                 {{csrf_field()}}
                                 <div class="modal-body">
                                     <p>هل انت متاكد من عملية الحذف ؟</p><br>
