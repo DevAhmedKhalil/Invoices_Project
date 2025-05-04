@@ -26,6 +26,43 @@
     <!-- breadcrumb -->
 @endsection
 @section('content')
+
+    @if (session()->has('Add'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <strong>{{ session()->get('Add') }}</strong>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    @endif
+    @if (session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert" id="success-alert">
+            {{ session('success') }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="إغلاق">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    @elseif (session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert" id="error-alert">
+            {{ session('error') }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="إغلاق">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    @endif
+    @if ($errors->any())
+        <div class="alert alert-danger alert-dismissible fade show" role="alert" id="error-alert">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+            <button type="button" class="close" data-dismiss="alert" aria-label="إغلاق">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    @endif
+
     <!-- row -->
     <div class="row">
         <!-- row opened -->
@@ -44,8 +81,7 @@
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table id="example1" class="table key-buttons text-md-nowrap" data-page-length="50">
-                                <thead>
+                            <table id="example1" class="table key-buttons text-md-nowrap" data-page-length="50"><thead>
                                 <tr>
                                     <th class="border-bottom-0">#</th>
                                     <th class="border-bottom-0">رقم الفاتورة</th>
@@ -59,52 +95,34 @@
                                     <th class="border-bottom-0">الإجمالي</th>
                                     <th class="border-bottom-0">الحالة</th>
                                     <th class="border-bottom-0">ملاحظات</th>
+                                    <th class="border-bottom-0">الإجراءات</th>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr>
-                                    <td>
-                                        <div class="sticky-cell">2</div>
-                                    </td>
-                                    <td>
-                                        <div class="sticky-cell">INV-002</div>
-                                    </td>
-                                    <td>
-                                        <div class="sticky-cell">2025-04-02</div>
-                                    </td>
-                                    <td>
-                                        <div class="sticky-cell">2025-04-15</div>
-                                    </td>
-                                    <td>
-                                        <div class="sticky-cell">Product B</div>
-                                    </td>
-                                    <td>
-                                        <div class="sticky-cell">Section B</div>
-                                    </td>
-                                    <td>
-                                        <div class="sticky-cell">10%</div>
-                                    </td>
-                                    <td>
-                                        <div class="sticky-cell">15%</div>
-                                    </td>
-                                    <td>
-                                        <div class="sticky-cell">150.00</div>
-                                    </td>
-                                    <td>
-                                        <div class="sticky-cell">1650.00</div>
-                                    </td>
-                                    <td>
-                                        <div class="sticky-cell">Unpaid</div>
-                                    </td>
-                                    <td>
-                                        <div class="sticky-cell">Pending</div>
-                                    </td>
-                                    <td>
-                                        <a href="#" class="btn btn-info btn-sm">عرض</a>
-                                        <a href="#" class="btn btn-primary btn-sm">تعديل</a>
-                                        <button class="btn btn-danger btn-sm">حذف</button>
-                                    </td>
-                                </tr>
+                                @foreach ($invoices as $invoice)
+                                    <tr>
+                                        <td><div class="sticky-cell">{{ $loop->iteration }}</div></td>
+                                        <td><div class="sticky-cell">{{ $invoice->invoice_number }}</div></td>
+                                        <td><div class="sticky-cell">{{ $invoice->invoice_date }}</div></td>
+                                        <td><div class="sticky-cell">{{ $invoice->due_date }}</div></td>
+                                        <td><div class="sticky-cell">{{ $invoice->product_id }}</div></td>
+                                        <td><div class="sticky-cell">{{ $invoice->section_id }}</div></td>
+                                        <td><div class="sticky-cell">{{ $invoice->discount }}%</div></td>
+                                        <td><div class="sticky-cell">{{ $invoice->rate_vat }}%</div></td>
+                                        <td><div class="sticky-cell">{{ $invoice->value_vat }}</div></td>
+                                        <td><div class="sticky-cell">{{ $invoice->total }}</div></td>
+                                        <td><div class="sticky-cell">{{ $invoice->status }}</div></td>
+                                        <td><div class="sticky-cell">{{ $invoice->note }}</div></td>
+                                        <td>
+                                            <a  class="btn btn-primary btn-sm text-white">تعديل</a>
+                                            <form  method="POST" style="display:inline;">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button class="btn btn-danger btn-sm" onclick="return confirm('هل أنت متأكد من الحذف؟')">حذف</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                @endforeach
                                 </tbody>
                             </table>
                         </div>

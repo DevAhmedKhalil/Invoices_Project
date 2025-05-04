@@ -120,7 +120,7 @@ class InvoicesController extends Controller
 
         // Flash success message to the session and redirect
         session()->flash('success', 'Invoice added successfully');
-        return back();
+        return redirect("/invoice");
     }
 
     /**

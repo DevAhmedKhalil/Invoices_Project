@@ -30,7 +30,6 @@
 @endsection
 
 @section('content')
-
     @if (session()->has('Add'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             <strong>{{ session()->get('Add') }}</strong>
