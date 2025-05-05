@@ -30,18 +30,6 @@ class Invoice extends Model
 
     protected array $dates = ['deleted_at'];
 
-    public function getStatusAttribute(): string
-    {
-        return match ($this->status_value) {
-            0 => 'Unpaid',
-            1 => 'Paid',
-            2 => 'Partially Paid',
-            3 => 'Overdue',
-            default => 'Unknown',
-        };
-    }
-
-
     // Relationship with Section
     public function section(): BelongsTo
     {
