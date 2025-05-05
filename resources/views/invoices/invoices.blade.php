@@ -81,7 +81,8 @@
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table id="example1" class="table key-buttons text-md-nowrap" data-page-length="50"><thead>
+                            <table id="example1" class="table key-buttons text-md-nowrap" data-page-length="50">
+                                <thead>
                                 <tr>
                                     <th class="border-bottom-0">#</th>
                                     <th class="border-bottom-0">رقم الفاتورة</th>
@@ -101,24 +102,61 @@
                                 <tbody>
                                 @foreach ($invoices as $invoice)
                                     <tr>
-                                        <td><div class="sticky-cell">{{ $loop->iteration }}</div></td>
-                                        <td><div class="sticky-cell">{{ $invoice->invoice_number }}</div></td>
-                                        <td><div class="sticky-cell">{{ $invoice->invoice_date }}</div></td>
-                                        <td><div class="sticky-cell">{{ $invoice->due_date }}</div></td>
-                                        <td><div class="sticky-cell">{{ $invoice->product_id }}</div></td>
-                                        <td><div class="sticky-cell">{{ $invoice->section_id }}</div></td>
-                                        <td><div class="sticky-cell">{{ $invoice->discount }}%</div></td>
-                                        <td><div class="sticky-cell">{{ $invoice->rate_vat }}%</div></td>
-                                        <td><div class="sticky-cell">{{ $invoice->value_vat }}</div></td>
-                                        <td><div class="sticky-cell">{{ $invoice->total }}</div></td>
-                                        <td><div class="sticky-cell">{{ $invoice->status }}</div></td>
-                                        <td><div class="sticky-cell">{{ $invoice->note }}</div></td>
                                         <td>
-                                            <a  class="btn btn-primary btn-sm text-white">تعديل</a>
-                                            <form  method="POST" style="display:inline;">
+                                            <div class="sticky-cell">{{ $loop->iteration }}</div>
+                                        </td>
+                                        <td>
+                                            <div class="sticky-cell">{{ $invoice->invoice_number }}</div>
+                                        </td>
+                                        <td>
+                                            <div class="sticky-cell">{{ $invoice->invoice_date }}</div>
+                                        </td>
+                                        <td>
+                                            <div class="sticky-cell">{{ $invoice->due_date }}</div>
+                                        </td>
+                                        <td>
+                                            <div class="sticky-cell">{{ $invoice->product->product_name }}</div>
+                                        </td>
+                                        <td>
+                                            <div class="sticky-cell">{{ $invoice->section->section_name }}</div>
+                                        </td>
+                                        <td>
+                                            <div class="sticky-cell">{{ $invoice->discount }}%</div>
+                                        </td>
+                                        <td>
+                                            <div class="sticky-cell">{{ $invoice->rate_vat }}%</div>
+                                        </td>
+                                        <td>
+                                            <div class="sticky-cell">{{ $invoice->value_vat }}</div>
+                                        </td>
+                                        <td>
+                                            <div class="sticky-cell">{{ $invoice->total }}</div>
+                                        </td>
+                                        <td>
+                                            <div class="sticky-cell
+                                                    {{ match($invoice->status_value) {
+                                                        0 => 'text-danger fw-semibold',
+                                                        1 => 'text-success fw-semibold',
+                                                        2 => 'text-warning fw-semibold',
+                                                        3 => 'text-secondary fw-semibold',
+                                                        default => 'text-dark',
+                                                    } }}
+                                               ">
+                                                {{ $invoice->status }}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class=" sticky-cell
+                                            ">{{ $invoice->note }}</div>
+                                        </td>
+                                        <td class="text-center text-nowrap">
+                                            <a class="btn btn-primary btn-sm text-white">تعديل</a>
+                                            <form method="POST" style="display:inline;">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button class="btn btn-danger btn-sm" onclick="return confirm('هل أنت متأكد من الحذف؟')">حذف</button>
+                                                <button class="btn btn-danger btn-sm"
+                                                        onclick="return confirm('هل أنت متأكد من الحذف؟')">حذف
+                                                </button>
                                             </form>
                                         </td>
                                     </tr>
