@@ -118,7 +118,7 @@
                                             <div class="sticky-cell">{{ $invoice->product->product_name }}</div>
                                         </td>
                                         <td>
-                                            <div class="sticky-cell">{{ $invoice->section->section_name }}</div>
+                                            <a href="{{ url('invoices-details') }}/{{ $invoice->id }}">{{ $invoice->section->section_name }}</a>
                                         </td>
                                         <td>
                                             <div class="sticky-cell">{{ $invoice->discount }}%</div>
@@ -150,12 +150,13 @@
                                             ">{{ $invoice->note }}</div>
                                         </td>
                                         <td class="text-center text-nowrap">
-                                            <a class="btn btn-primary btn-sm text-white">تعديل</a>
+                                            <a class="btn btn-info btn-sm text-white"><i class="las la-pen"></i></a>
                                             <form method="POST" style="display:inline;">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button class="btn btn-danger btn-sm"
-                                                        onclick="return confirm('هل أنت متأكد من الحذف؟')">حذف
+                                                        onclick="return confirm('هل أنت متأكد من الحذف؟')"><i
+                                                            class="las la-trash"></i>
                                                 </button>
                                             </form>
                                         </td>

@@ -104,7 +104,7 @@ class InvoicesController extends Controller
         // Handle file attachment if provided
         if ($request->hasFile('pic')) {
             $file = $request->file('pic');
-            $file_name = time() . '_' . $file->getClientOriginalName();
+            $file_name = $file->getClientOriginalName();
 
             // Move the file to the public attachments directory
             $file->move(public_path('attachments/' . $invoice->invoice_number), $file_name);

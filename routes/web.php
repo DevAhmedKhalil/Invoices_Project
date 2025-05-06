@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InvoicesController;
+use App\Http\Controllers\InvoicesDetailsController;
 use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\SectionsController;
 use Illuminate\Support\Facades\Auth;
@@ -40,6 +41,14 @@ Route::middleware('auth')->group(function () {
     Route::resource('product', ProductsController::class);
 
     Route::get('/section/{id}', [InvoicesController::class, 'getProducts']);
+
+    // Invoices URLS
+    Route::get('/invoices-details/{id}', [InvoicesDetailsController::class, 'edit']);
+
+    Route::get('/view-file/{invoice_number}/{file_name}', [InvoicesDetailsController::class, 'viewFile']);
+    Route::get('/download/{invoice_number}/{file_name}', [InvoicesDetailsController::class, 'downloadFile']);
+    Route::post('/delete-file', [InvoicesDetailsController::class, 'destroy'])->name('delete-file');
+
 
     // 🧑‍💼 Admin panel or dynamic pages
     Route::get('/{page}', [AdminController::class, 'index']);
