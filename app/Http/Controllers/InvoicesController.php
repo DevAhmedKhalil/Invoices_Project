@@ -150,8 +150,20 @@ class InvoicesController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Invoice $invoices)
+    public function destroy($id)
     {
-        //
+        // Step 1: Find the invoice by ID
+        $invoice = Invoice::find($id);
+
+        // Step 2: Check if the invoice exists
+        if (!$invoice) {
+            return redirect()->back()->with('error', 'الفاتورة غير موجودة.');
+        }
+
+        // Step 3: Delete the invoice
+        $invoice->delete();
+
+        // Step 4: Redirect back with a success message
+        return redirect()->route('invoice.index')->with('success', 'تم حذف الفاتورة بنجاح.');
     }
 }

@@ -151,14 +151,13 @@
                                         </td>
                                         <td class="text-center text-nowrap">
                                             <a class="btn btn-info btn-sm text-white"><i class="las la-pen"></i></a>
-                                            <form method="POST" style="display:inline;">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button class="btn btn-danger btn-sm"
-                                                        onclick="return confirm('هل أنت متأكد من الحذف؟')"><i
-                                                            class="las la-trash"></i>
-                                                </button>
-                                            </form>
+                                            <button class="btn btn-danger btn-sm"
+                                                    data-toggle="modal"
+                                                    data-target="#deleteModal"
+                                                    data-id="{{ $invoice->id }}"
+                                                    data-invoice_number="{{ $invoice->invoice_number }}">
+                                                <i class="las la-trash"></i>
+                                            </button>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -170,6 +169,34 @@
             </div>
             <!--/div-->
             <!-- row closed -->
+
+            <!-- Delete modal -->
+            <div class="modal" id="deleteModal">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content modal-content-demo">
+                        <div class="modal-header">
+                            <h6 class="modal-title">حذف المنتج</h6>
+                            <button aria-label="Close" class="close" data-dismiss="modal"
+                                    type="button"><span aria-hidden="true">&times;</span></button>
+                        </div>
+                        <form id="deleteForm" method="post">
+                            @method("DELETE")
+                            @csrf
+                            <div class="modal-body">
+                                <p>هل انت متاكد من عملية الحذف ؟</p><br>
+                                <input type="hidden" name="id" id="id" value="">
+                                <input class="form-control" name="invoice_name" id="invoice_name" type="text"
+                                       readonly>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">الغاء</button>
+                                <button type="submit" class="btn btn-danger">تاكيد</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <!--End Delete modal -->
         </div>
         <!-- Container closed -->
         <!-- main-content closed -->
@@ -194,4 +221,20 @@
             <script src="{{URL::asset('assets/plugins/datatable/js/responsive.bootstrap4.min.js')}}"></script>
             <!--Internal  Datatable js -->
             <script src="{{URL::asset('assets/js/table-data.js')}}"></script>
+
+
+            <script>
+                $('#deleteModal').on('show.bs.modal', function (event) {
+                    var button = $(event.relatedTarget)
+                    var id = button.data('id')
+                    var invoice_number = button.data('invoice_number')
+                    var modal = $(this)
+                    modal.find('.modal-body #id').val(id);
+                    modal.find('.modal-body #invoice_name').val(invoice_number);
+
+                    // Update the form action dynamically
+                    modal.find('form#deleteForm').attr('action', '/invoice/' + id);
+                })
+            </script>
+
 @endsection
