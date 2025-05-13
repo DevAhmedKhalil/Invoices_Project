@@ -43,7 +43,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/section/{id}', [InvoicesController::class, 'getProducts']);
 
     // Invoices URLS
-    Route::get('/invoices-details/{id}', [InvoicesDetailsController::class, 'edit']);
+    Route::get('/invoices-details/{id}', [InvoicesDetailsController::class, 'edit'])->name('invoices-details.edit');
 
     Route::get('/view-file/{invoice_number}/{file_name}', [InvoicesDetailsController::class, 'viewFile']);
     Route::get('/download/{invoice_number}/{file_name}', [InvoicesDetailsController::class, 'downloadFile']);
