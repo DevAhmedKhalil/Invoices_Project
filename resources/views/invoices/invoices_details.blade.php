@@ -34,9 +34,9 @@
             </ul>
         </div>
     @endif
-    @if (session()->has('Add'))
+    @if (session()->has('success'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <strong>{{ session()->get('Add') }}</strong>
+            <strong>{{ session()->get('success') }}</strong>
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
             </button>
@@ -218,29 +218,20 @@
                                         <!-- Attachments Tab -->
                                         <div class="tab-pane" id="tab6">
                                             <div class="card card-statistics">
-                                                @can('اضافة مرفق')
                                                     <div class="card-body">
                                                         <p class="text-danger">* صيغة المرفق: pdf, jpeg, jpg, png</p>
                                                         <h5 class="card-title">إضافة مرفقات</h5>
-                                                        <form method="post" action="{{ url('/invoices-details') }}"
-                                                              enctype="multipart/form-data">
-                                                            {{ csrf_field() }}
+                                                        <form method="post" action="{{ route('invoices.attachments.store', $invoices->id) }}" enctype="multipart/form-data">
+                                                            @csrf
                                                             <div class="custom-file">
-                                                                <input type="file" class="custom-file-input"
-                                                                       id="customFile" name="file_name" required>
-                                                                <input type="hidden" name="invoice_number"
-                                                                       value="{{ $invoices->invoice_number }}">
-                                                                <input type="hidden" name="invoice_id"
-                                                                       value="{{ $invoices->id }}">
-                                                                <label class="custom-file-label" for="customFile">حدد
-                                                                    المرفق</label>
+                                                                <input type="file" class="custom-file-input" id="customFile" name="file_name" required>
+                                                                <input type="hidden" name="invoice_number" value="{{ $invoices->invoice_number }}">
+                                                                <label class="custom-file-label" for="customFile">حدد المرفق</label>
                                                             </div>
                                                             <br><br>
-                                                            <button type="submit" class="btn btn-primary btn-sm">تأكيد
-                                                            </button>
+                                                            <button type="submit" class="btn btn-primary btn-sm">تأكيد</button>
                                                         </form>
                                                     </div>
-                                                @endcan
                                                 <div class="table-responsive mt-15">
                                                     <table class="table table-hover text-center mb-0">
                                                         <thead>
@@ -354,10 +345,26 @@
     </script>
 
     <script>
-        // Display selected file name
-        $('.custom-file-input').on('change', function () {
-            var fileName = $(this).val().split('\\').pop();
-            $(this).siblings('.custom-file-label').addClass('selected').html(fileName);
+        // Display the selected file name => Vanilla JS
+        document.addEventListener('DOMContentLoaded', function () {
+            const fileInput = document.querySelector('.custom-file-input');
+            if (fileInput) {
+                fileInput.addEventListener('change', function (e) {
+                    const fileName = e.target.files[0]?.name;
+                    const label = e.target.closest('.custom-file').querySelector('.custom-file-label');
+                    if (label) {
+                        label.classList.add('selected');
+                        label.textContent = fileName || "حدد المرفق";
+                    }
+                });
+            }
         });
     </script>
+{{--    <script>--}}
+{{--        // Display the selected file name => JQuery--}}
+{{--        $('.custom-file-input').on('change', function () {--}}
+{{--            var fileName = $(this).val().split('\\').pop();--}}
+{{--            $(this).siblings('.custom-file-label').addClass('selected').html(fileName);--}}
+{{--        });--}}
+{{--    </script>--}}
 @endsection

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\InvoicesAttachmentController;
 use App\Http\Controllers\InvoicesController;
 use App\Http\Controllers\InvoicesDetailsController;
 use App\Http\Controllers\ProductsController;
@@ -49,6 +50,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/download/{invoice_number}/{file_name}', [InvoicesDetailsController::class, 'downloadFile']);
     Route::post('/delete-file', [InvoicesDetailsController::class, 'destroy'])->name('delete-file');
 
+    Route::post('/invoices/{invoiceId}/attachments', [InvoicesAttachmentController::class, 'store'])->name('invoices.attachments.store');
 
     // 🧑‍💼 Admin panel or dynamic pages
     Route::get('/{page}', [AdminController::class, 'index']);
