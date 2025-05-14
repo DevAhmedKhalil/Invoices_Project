@@ -12,22 +12,7 @@ class Invoice extends Model
 
     protected $table = 'invoices';
 
-    protected $fillable = [
-        'invoice_number',
-        'invoice_date',
-        'due_date',
-        'discount',
-        'rate_vat',
-        'value_vat',
-        'total',
-        'status',
-        'status_value',
-        'note',
-        'section_id',
-        'product_id',
-        'user_id'
-    ];
-
+    protected $guarded = [];
     protected array $dates = ['deleted_at'];
 
     // Relationship with Section

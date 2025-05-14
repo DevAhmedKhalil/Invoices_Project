@@ -150,7 +150,8 @@
                                             ">{{ $invoice->note }}</div>
                                         </td>
                                         <td class="text-center text-nowrap">
-                                            <a href="{{ route('invoices-details.edit', $invoice->id) }}" class="btn btn-info btn-sm text-white"><i class="las la-pen"></i></a>
+                                            <a href="{{ route('invoices.edit', $invoice->id) }}"
+                                               class="btn btn-info btn-sm text-white"><i class="las la-pen"></i></a>
                                             <button class="btn btn-danger btn-sm"
                                                     data-toggle="modal"
                                                     data-target="#deleteModal"

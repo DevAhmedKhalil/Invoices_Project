@@ -8,32 +8,38 @@ return new class extends Migration {
     public function up()
     {
         Schema::create('invoices', function (Blueprint $table) {
+            // ------------------- المعرفات الأساسية -------------------
             $table->id();
-            $table->string('invoice_number')->unique();
-            $table->date('invoice_date');
-            $table->date('due_date');
+            $table->string('invoice_number')->unique()->comment('رقم الفاتورة');
+            $table->date('invoice_date')->comment('تاريخ الفاتورة');
+            $table->date('due_date')->comment('تاريخ الاستحقاق');
 
-            // Relationships
-            $table->foreignId('product_id')->constrained('products')->cascadeOnDelete();
-            $table->foreignId('section_id')->constrained('sections')->cascadeOnDelete();
-            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+            // ------------------- العلاقات مع الجداول الأخرى -------------------
+            $table->foreignId('product_id')->constrained('products')->cascadeOnDelete()->comment('المنتج');
+            $table->foreignId('section_id')->constrained('sections')->cascadeOnDelete()->comment('القسم');
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete()->comment('المستخدم');
 
-            // Financials
-            $table->decimal('discount', 10, 2)->default(0.00);
-            $table->decimal('rate_vat', 5, 2);
-            $table->decimal('value_vat', 10, 2);
-            $table->decimal('total', 12, 2);
+            // ------------------- الحقول المالية -------------------
+            $table->decimal('amount_collection', 10, 2)->default(0.00)->comment('مبلغ التحصيل');
+            $table->decimal('amount_commission', 10, 2)->comment('مبلغ العمولة');
+            $table->decimal('discount', 10, 2)->default(0.00)->comment('الخصم');
+            $table->decimal('rate_vat', 5, 2)->comment('نسبة الضريبة');
+            $table->decimal('value_vat', 10, 2)->comment('قيمة الضريبة');
+            $table->decimal('total', 12, 2)->comment('الإجمالي شامل الضريبة');
 
-            // Status
-            $table->enum('status', ['paid', 'unpaid', 'partial', 'overdue'])->default('unpaid');
-            $table->tinyInteger('status_value')->comment('0=unpaid, 1=paid, 2=partial, 3=overdue');
+            // ------------------- حالة الفاتورة -------------------
+            $table->enum('status', ['paid', 'unpaid', 'partial', 'overdue'])
+                ->default('unpaid')
+                ->comment('حالة الدفع');
+            $table->tinyInteger('status_value')
+                ->comment('0=غير مدفوعة، 1=مدفوعة، 2=جزئية، 3=متأخرة');
 
-            // Additional
-            $table->text('note')->nullable();
+            // ------------------- معلومات إضافية -------------------
+            $table->text('note')->nullable()->comment('ملاحظات');
             $table->timestamps();
             $table->softDeletes();
 
-            // Indexes
+            // ------------------- الفهارس -------------------
             $table->index('invoice_number');
             $table->index('due_date');
             $table->index('status');

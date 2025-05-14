@@ -52,6 +52,7 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/invoices/{invoiceId}/attachments', [InvoicesAttachmentController::class, 'store'])->name('invoices.attachments.store');
 
+    Route::get('/edit-invoice/{invoiceId}', [InvoicesController::class, 'edit'])->name('invoices.edit');
     // 🧑‍💼 Admin panel or dynamic pages
     Route::get('/{page}', [AdminController::class, 'index']);
 });
