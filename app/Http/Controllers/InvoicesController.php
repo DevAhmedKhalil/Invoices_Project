@@ -146,9 +146,71 @@ class InvoicesController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Invoice $invoices)
+    public function update(Request $request, $id)
     {
-        //
+        try {
+            // البحث عن الفاتورة
+            $invoice = Invoice::findOrFail($id);
+
+            // استخدام القيم الحالية كقيم افتراضية
+            $request->merge([
+                'section_id' => $request->section_id ?? $invoice->section_id,
+                'product_id' => $request->product_id ?? $invoice->product_id
+            ]);
+
+            // التحقق من صحة البيانات
+            $validatedData = $request->validate([
+                'invoice_number' => 'required|string|max:255|unique:invoices,invoice_number,' . $id,
+                'invoice_date' => 'required|date',
+                'due_date' => 'required|date|after_or_equal:invoice_date',
+                'section_id' => 'required|exists:sections,id',
+                'product_id' => 'required|exists:products,id',
+                'amount_collection' => 'nullable|numeric',
+                'amount_commission' => 'required|numeric',
+                'discount' => 'required|numeric',
+                'rate_vat' => 'required|string',
+                'value_vat' => 'required|numeric',
+                'total' => 'required|numeric',
+            ]);
+
+            // تحويل نسبة الضريبة من نص إلى رقم
+            $rate_vat = (float)str_replace('%', '', $request->rate_vat);
+
+            // تحديث كافة الحقول مباشرة من الـ Request
+            $invoice->update([
+                'invoice_number' => $request->invoice_number,
+                'invoice_date' => $request->invoice_date,
+                'due_date' => $request->due_date,
+                'section_id' => $request->section_id,
+                'product_id' => $request->product_id,
+                'amount_collection' => $request->amount_collection,
+                'amount_commission' => $request->amount_commission,
+                'discount' => $request->discount,
+                'rate_vat' => $rate_vat,
+                'value_vat' => $request->value_vat,
+                'total' => $request->total,
+                'note' => $request->note,
+            ]);
+
+            // تسجيل التغييرات في جدول التفاصيل
+//            InvoicesDetails::create([
+//                'invoice_id' => $invoice->id,
+//                'invoice_number' => $invoice->invoice_number,
+//                'product' => $request->product_id,
+//                'section' => $request->section_id,
+//                'status' => $invoice->status,
+//                'status_value' => $invoice->status_value,
+//                'note' => $request->note,
+//                'user' => Auth::user()->name,
+//            ]);
+
+            return redirect()->route('invoice.index')
+                ->with('success', 'تم تحديث الفاتورة بنجاح');
+
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'حدث خطأ أثناء التحديث: ' . $e->getMessage());
+        }
     }
 
     /**
