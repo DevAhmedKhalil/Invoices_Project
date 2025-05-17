@@ -10,6 +10,7 @@ use App\Models\Section;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 
 class InvoicesController extends Controller
 {
@@ -248,38 +249,27 @@ class InvoicesController extends Controller
 
     public function forceDestroy($id)
     {
-        // Step 1: Find the invoice, including soft-deleted ones
-        $invoice = Invoice::withTrashed()->find($id);
+        // Step 1: Find the invoice, including soft-deleted ones and its attachments
+        $invoice = Invoice::withTrashed()->with('attachments')->find($id);
 
         // Step 2: Check if the invoice exists
         if (!$invoice) {
             return redirect()->back()->with('error', 'الفاتورة غير موجودة.');
         }
 
-        // Step 3: Delete all related attachments (from both database and filesystem)
-        foreach ($invoice->attachments as $attachment) {
-            // Build the file path
-            $filePath = public_path('attachments/' . $attachment->invoice_number . '/' . $attachment->file_name);
+        // Step 3: Delete all related attachments from the database
+        $invoice->attachments()->delete(); // this deletes from DB
 
-            // Delete the file from storage if it exists
-            if (file_exists($filePath)) {
-                unlink($filePath);
-            }
-
-            // Delete the record from the database
-            $attachment->delete();
-        }
-
-        // Step 4: Delete the invoice folder if it's empty
+        // Step 4: Delete the full invoice attachments directory from storage
         $folderPath = public_path('attachments/' . $invoice->invoice_number);
-        if (is_dir($folderPath)) {
-            @rmdir($folderPath); // Will only work if the folder is empty
+        if (File::exists($folderPath)) {
+            File::deleteDirectory($folderPath);
         }
 
         // Step 5: Permanently delete the invoice from the database
         $invoice->forceDelete();
 
-        // Step 6: Redirect back with a notification
+        // Step 6: Redirect with success message
         return redirect()->route('invoice.index')->with([
             'notif' => [
                 'msg' => 'تم حذف الفاتورة والمرفقات نهائيًا',
@@ -287,4 +277,5 @@ class InvoicesController extends Controller
             ]
         ]);
     }
+
 }

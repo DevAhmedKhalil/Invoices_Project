@@ -192,15 +192,13 @@
                                                     </button>
 
                                                     {{-- Force Delete --}}
-                                                    <form action="{{ route('invoice.forceDestroy', $invoice->id) }}"
-                                                          method="POST"
-                                                          onsubmit="return confirm('Are you sure you want to permanently delete this invoice? This action cannot be undone.')">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" class="dropdown-item text-danger">
-                                                            <i class="las la-trash-alt"></i> حذف نهائي
-                                                        </button>
-                                                    </form>
+                                                    <button class="dropdown-item text-danger"
+                                                            data-toggle="modal"
+                                                            data-target="#forceDeleteModal"
+                                                            data-id="{{ $invoice->id }}"
+                                                            data-invoice_number="{{ $invoice->invoice_number }}">
+                                                        <i class="las la-times-circle"></i> حذف نهائي
+                                                    </button>
 
                                                 </div>
                                             </div>
@@ -216,6 +214,39 @@
             </div>
             <!--/div-->
             <!-- row closed -->
+
+            <!-- Force Delete Modal -->
+            <div class="modal" id="forceDeleteModal">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content modal-content-demo">
+                        <div class="modal-header bg-danger text-white">
+                            <h6 class="modal-title text-white">حذف نهائي للفاتورة</h6>
+                            <button aria-label="Close" class="close text-white" data-dismiss="modal" type="button">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+
+                        <form id="forceDeleteForm" method="post">
+                            @csrf
+                            @method("DELETE")
+                            <div class="modal-body">
+                                <p class="text-danger font-weight-bold">
+                                    ⚠️ هل أنت متأكد أنك تريد حذف هذه الفاتورة بشكل نهائي؟ لا يمكن التراجع عن هذا
+                                    الإجراء.
+                                </p>
+                                <input type="hidden" name="id" id="force_id" value="">
+                                <input class="form-control" name="invoice_number" id="force_invoice_number" type="text"
+                                       readonly>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">إلغاء</button>
+                                <button type="submit" class="btn btn-danger">حذف نهائي</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <!-- End Force Delete Modal -->
 
             <!-- Delete modal -->
             <div class="modal" id="deleteModal">
@@ -274,49 +305,35 @@
             <script src="{{URL::asset('assets/plugins/notify/js/notifIt.js')}}"></script>
             <script src="{{URL::asset('assets/plugins/notify/js/notifit-custom.js')}}"></script>
 
-            {{--            <script>--}}
-            {{--                $('#deleteModal').on('show.bs.modal', function (event) {--}}
-            {{--                    var button = $(event.relatedTarget)--}}
-            {{--                    var id = button.data('id')--}}
-            {{--                    var invoice_number = button.data('invoice_number')--}}
-            {{--                    var modal = $(this)--}}
-            {{--                    modal.find('.modal-body #id').val(id);--}}
-            {{--                    modal.find('.modal-body #invoice_name').val(invoice_number);--}}
-
-            {{--                    // Update the form action dynamically--}}
-            {{--                    modal.find('form#deleteForm').attr('action', '/invoice/' + id);--}}
-            {{--                })--}}
-            {{--            </script>--}}
             <script>
-                (function ($) {
-                    'use strict';
+                $('#forceDeleteModal').on('show.bs.modal', function (event) {
+                    var button = $(event.relatedTarget);
+                    var id = button.data('id');
+                    var invoiceNumber = button.data('invoice_number');
 
-                    $(document).ready(function () {
-                        $('#deleteModal').on('show.bs.modal', function (event) {
-                            const button = $(event.relatedTarget);
+                    // تحديث بيانات الفورم
+                    var modal = $(this);
+                    modal.find('#force_id').val(id);
+                    modal.find('#force_invoice_number').val(invoiceNumber);
 
-                            // Safely fetch data attributes
-                            const id = button.data('id');
-                            const invoiceNumber = button.data('invoice_number');
+                    // تحديد رابط الفورم بناءً على الـ ID
+                    var deleteUrl = '/invoices/force-delete/' + id;
+                    $('#forceDeleteForm').attr('action', deleteUrl);
+                });
+            </script>
 
-                            const modal = $(this);
+            <script>
+                $('#deleteModal').on('show.bs.modal', function (event) {
+                    var button = $(event.relatedTarget)
+                    var id = button.data('id')
+                    var invoice_number = button.data('invoice_number')
+                    var modal = $(this)
+                    modal.find('.modal-body #id').val(id);
+                    modal.find('.modal-body #invoice_name').val(invoice_number);
 
-                            // Defensive check
-                            if (!id || !invoiceNumber) {
-                                console.warn('Missing required data attributes');
-                                return;
-                            }
-
-                            // Fill form fields
-                            modal.find('#id').val(id);
-                            modal.find('#invoice_name').val(invoiceNumber);
-
-                            // Set form action
-                            const form = modal.find('form#deleteForm');
-                            form.attr('action', `/invoice/${id}`);
-                        });
-                    });
-                })(jQuery);
+                    // Update the form action dynamically
+                    modal.find('form#deleteForm').attr('action', '/invoice/' + id);
+                })
             </script>
 
 @endsection

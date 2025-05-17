@@ -34,7 +34,7 @@ Route::middleware('auth')->group(function () {
 
     // 📄 Invoice management (CRUD)
     Route::resource('invoice', InvoicesController::class);
-    Route::delete('/invoice/force/{id}', [InvoicesController::class, 'forceDestroy'])->name('invoice.forceDestroy');
+    Route::delete('invoices/force-delete/{id}', [InvoicesController::class, 'forceDestroy'])->name('invoices.force-delete');
 
 
     // 🧩 Section/category management (CRUD)
