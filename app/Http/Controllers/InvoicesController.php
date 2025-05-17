@@ -119,8 +119,12 @@ class InvoicesController extends Controller
         }
 
         // Flash success message to the session and redirect
-        session()->flash('success', 'Invoice added successfully');
-        return redirect("/invoice");
+        return redirect("/invoice")->with([
+            'notif' => [
+                'msg' => 'تم إضافة الفاتورة بنجاح',
+                'type' => 'success'
+            ]
+        ]);
     }
 
     /**
@@ -204,8 +208,12 @@ class InvoicesController extends Controller
 //                'user' => Auth::user()->name,
 //            ]);
 
-            return redirect()->route('invoice.index')
-                ->with('success', 'تم تحديث الفاتورة بنجاح');
+            return redirect()->route('invoice.index')->with([
+                'notif' => [
+                    'msg' => 'تم تحديث الفاتورة بنجاح',
+                    'type' => 'success'
+                ]
+            ]);
 
         } catch (\Exception $e) {
             return redirect()->back()
@@ -226,10 +234,57 @@ class InvoicesController extends Controller
             return redirect()->back()->with('error', 'الفاتورة غير موجودة.');
         }
 
-        // Step 3: Delete the invoice
+        // Step 3: Soft delete the invoice (sets deleted_at timestamp)
         $invoice->delete();
 
-        // Step 4: Redirect back with a success message
-        return redirect()->route('invoice.index')->with('success', 'تم حذف الفاتورة بنجاح.');
+        // Step 4: Redirect back with a success notification
+        return redirect()->route('invoice.index')->with([
+            'notif' => [
+                'msg' => 'تم حذف الفاتورة بنجاح',
+                'type' => 'success'
+            ]
+        ]);
+    }
+
+    public function forceDestroy($id)
+    {
+        // Step 1: Find the invoice, including soft-deleted ones
+        $invoice = Invoice::withTrashed()->find($id);
+
+        // Step 2: Check if the invoice exists
+        if (!$invoice) {
+            return redirect()->back()->with('error', 'الفاتورة غير موجودة.');
+        }
+
+        // Step 3: Delete all related attachments (from both database and filesystem)
+        foreach ($invoice->attachments as $attachment) {
+            // Build the file path
+            $filePath = public_path('attachments/' . $attachment->invoice_number . '/' . $attachment->file_name);
+
+            // Delete the file from storage if it exists
+            if (file_exists($filePath)) {
+                unlink($filePath);
+            }
+
+            // Delete the record from the database
+            $attachment->delete();
+        }
+
+        // Step 4: Delete the invoice folder if it's empty
+        $folderPath = public_path('attachments/' . $invoice->invoice_number);
+        if (is_dir($folderPath)) {
+            @rmdir($folderPath); // Will only work if the folder is empty
+        }
+
+        // Step 5: Permanently delete the invoice from the database
+        $invoice->forceDelete();
+
+        // Step 6: Redirect back with a notification
+        return redirect()->route('invoice.index')->with([
+            'notif' => [
+                'msg' => 'تم حذف الفاتورة والمرفقات نهائيًا',
+                'type' => 'error'
+            ]
+        ]);
     }
 }

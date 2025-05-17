@@ -34,6 +34,8 @@ Route::middleware('auth')->group(function () {
 
     // 📄 Invoice management (CRUD)
     Route::resource('invoice', InvoicesController::class);
+    Route::delete('/invoice/force/{id}', [InvoicesController::class, 'forceDestroy'])->name('invoice.forceDestroy');
+
 
     // 🧩 Section/category management (CRUD)
     Route::resource('section', SectionsController::class);
@@ -47,13 +49,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/invoices-details/{id}', [InvoicesDetailsController::class, 'edit'])->name('invoices-details.edit');
 
     Route::get('/view-file/{invoice_number}/{file_name}', [InvoicesDetailsController::class, 'viewFile']);
+
     Route::get('/download/{invoice_number}/{file_name}', [InvoicesDetailsController::class, 'downloadFile']);
+
     Route::post('/delete-file', [InvoicesDetailsController::class, 'destroy'])->name('delete-file');
 
     Route::post('/invoices/{invoiceId}/attachments', [InvoicesAttachmentController::class, 'store'])->name('invoices.attachments.store');
 
     Route::get('/edit-invoice/{invoiceId}', [InvoicesController::class, 'edit'])->name('invoices.edit');
-    
+
     // 🧑‍💼 Admin panel or dynamic pages
     Route::get('/{page}', [AdminController::class, 'index']);
 });

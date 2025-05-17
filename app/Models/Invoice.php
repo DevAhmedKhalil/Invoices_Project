@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -10,10 +11,16 @@ class Invoice extends Model
 {
     use SoftDeletes;
 
+    protected array $dates = ['deleted_at'];
+
     protected $table = 'invoices';
 
     protected $guarded = [];
-    protected array $dates = ['deleted_at'];
+
+    public function attachments(): HasMany
+    {
+        return $this->hasMany(InvoicesAttachment::class, 'invoice_id');
+    }
 
     // Relationship with Section
     public function section(): BelongsTo

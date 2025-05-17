@@ -12,6 +12,8 @@
     <link href="{{URL::asset('assets/plugins/datatable/css/jquery.dataTables.min.css')}}" rel="stylesheet">
     <link href="{{URL::asset('assets/plugins/datatable/css/responsive.dataTables.min.css')}}" rel="stylesheet">
     <link href="{{URL::asset('assets/plugins/select2/css/select2.min.css')}}" rel="stylesheet">
+    <!--Internal   Notify -->
+    <link href="{{URL::asset('assets/plugins/notify/css/notifIt.css')}}" rel="stylesheet"/>
 @endsection
 @section('page-header')
     <!-- breadcrumb -->
@@ -27,14 +29,24 @@
 @endsection
 @section('content')
 
-    @if (session()->has('Add'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <strong>{{ session()->get('Add') }}</strong>
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    @if(session()->has('notif'))
+        <script>
+            window.onload = function () {
+                notif({
+                    msg: "{{ session('notif.msg') }}",
+                    type: "{{ session('notif.type') }}"
+                });
+            }
+        </script>
+    @elseif(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert" id="error-alert">
+            {{ session('error') }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="إغلاق">
                 <span aria-hidden="true">&times;</span>
             </button>
         </div>
     @endif
+
     @if (session('success'))
         <div class="alert alert-success alert-dismissible fade show" role="alert" id="success-alert">
             {{ session('success') }}
@@ -50,6 +62,7 @@
             </button>
         </div>
     @endif
+
     @if ($errors->any())
         <div class="alert alert-danger alert-dismissible fade show" role="alert" id="error-alert">
             <ul>
@@ -150,15 +163,48 @@
                                             ">{{ $invoice->note }}</div>
                                         </td>
                                         <td class="text-center text-nowrap">
-                                            <a href="{{ route('invoices.edit', $invoice->id) }}"
-                                               class="btn btn-info btn-sm text-white"><i class="las la-pen"></i></a>
-                                            <button class="btn btn-danger btn-sm"
-                                                    data-toggle="modal"
-                                                    data-target="#deleteModal"
-                                                    data-id="{{ $invoice->id }}"
-                                                    data-invoice_number="{{ $invoice->invoice_number }}">
-                                                <i class="las la-trash"></i>
-                                            </button>
+                                            <div class="dropdown">
+                                                <button class="btn btn-primary btn-sm p-1 d-flex align-items-center justify-content-center"
+                                                        type="button"
+                                                        id="dropdownMenuButton{{ $invoice->id }}"
+                                                        data-toggle="dropdown"
+                                                        aria-haspopup="true"
+                                                        aria-expanded="false"
+                                                        style="width: 30px; height: 30px;">
+                                                    <i class="las la-cog"></i>
+                                                </button>
+                                                <div class="dropdown-menu"
+                                                     aria-labelledby="dropdownMenuButton{{ $invoice->id }}">
+
+                                                    {{-- Edit --}}
+                                                    <a class="dropdown-item text-info"
+                                                       href="{{ route('invoices.edit', $invoice->id) }}">
+                                                        <i class="las la-pen"></i> تعديل
+                                                    </a>
+
+                                                    {{-- Soft Delete --}}
+                                                    <button class="dropdown-item text-danger"
+                                                            data-toggle="modal"
+                                                            data-target="#deleteModal"
+                                                            data-id="{{ $invoice->id }}"
+                                                            data-invoice_number="{{ $invoice->invoice_number }}">
+                                                        <i class="las la-trash"></i> حذف
+                                                    </button>
+
+                                                    {{-- Force Delete --}}
+                                                    <form action="{{ route('invoice.forceDestroy', $invoice->id) }}"
+                                                          method="POST"
+                                                          onsubmit="return confirm('Are you sure you want to permanently delete this invoice? This action cannot be undone.')">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="dropdown-item text-danger">
+                                                            <i class="las la-trash-alt"></i> حذف نهائي
+                                                        </button>
+                                                    </form>
+
+                                                </div>
+                                            </div>
+
                                         </td>
                                     </tr>
                                 @endforeach
@@ -198,8 +244,10 @@
                 </div>
             </div>
             <!--End Delete modal -->
+
         </div>
         <!-- Container closed -->
+
         <!-- main-content closed -->
         @endsection
         @section('js')
@@ -222,20 +270,53 @@
             <script src="{{URL::asset('assets/plugins/datatable/js/responsive.bootstrap4.min.js')}}"></script>
             <!--Internal  Datatable js -->
             <script src="{{URL::asset('assets/js/table-data.js')}}"></script>
+            <!--Internal  Notify js -->
+            <script src="{{URL::asset('assets/plugins/notify/js/notifIt.js')}}"></script>
+            <script src="{{URL::asset('assets/plugins/notify/js/notifit-custom.js')}}"></script>
 
+            {{--            <script>--}}
+            {{--                $('#deleteModal').on('show.bs.modal', function (event) {--}}
+            {{--                    var button = $(event.relatedTarget)--}}
+            {{--                    var id = button.data('id')--}}
+            {{--                    var invoice_number = button.data('invoice_number')--}}
+            {{--                    var modal = $(this)--}}
+            {{--                    modal.find('.modal-body #id').val(id);--}}
+            {{--                    modal.find('.modal-body #invoice_name').val(invoice_number);--}}
 
+            {{--                    // Update the form action dynamically--}}
+            {{--                    modal.find('form#deleteForm').attr('action', '/invoice/' + id);--}}
+            {{--                })--}}
+            {{--            </script>--}}
             <script>
-                $('#deleteModal').on('show.bs.modal', function (event) {
-                    var button = $(event.relatedTarget)
-                    var id = button.data('id')
-                    var invoice_number = button.data('invoice_number')
-                    var modal = $(this)
-                    modal.find('.modal-body #id').val(id);
-                    modal.find('.modal-body #invoice_name').val(invoice_number);
+                (function ($) {
+                    'use strict';
 
-                    // Update the form action dynamically
-                    modal.find('form#deleteForm').attr('action', '/invoice/' + id);
-                })
+                    $(document).ready(function () {
+                        $('#deleteModal').on('show.bs.modal', function (event) {
+                            const button = $(event.relatedTarget);
+
+                            // Safely fetch data attributes
+                            const id = button.data('id');
+                            const invoiceNumber = button.data('invoice_number');
+
+                            const modal = $(this);
+
+                            // Defensive check
+                            if (!id || !invoiceNumber) {
+                                console.warn('Missing required data attributes');
+                                return;
+                            }
+
+                            // Fill form fields
+                            modal.find('#id').val(id);
+                            modal.find('#invoice_name').val(invoiceNumber);
+
+                            // Set form action
+                            const form = modal.find('form#deleteForm');
+                            form.attr('action', `/invoice/${id}`);
+                        });
+                    });
+                })(jQuery);
             </script>
 
 @endsection
