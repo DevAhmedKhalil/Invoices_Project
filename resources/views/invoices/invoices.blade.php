@@ -200,9 +200,19 @@
                                                         <i class="las la-times-circle"></i> حذف نهائي
                                                     </button>
 
+                                                    {{-- Change Status --}}
+                                                    <button class="dropdown-item text-warning"
+                                                            data-toggle="modal"
+                                                            data-target="#statusModal"
+                                                            data-id="{{ $invoice->id }}"
+                                                            data-status="{{ $invoice->status }}"
+                                                            data-invoice_number="{{ $invoice->invoice_number }}"
+                                                            data-last_updated="{{ $invoice->updated_at }}">
+                                                        <i class="las la-sync"></i> تغيير حالة الفاتورة
+                                                    </button>
+
                                                 </div>
                                             </div>
-
                                         </td>
                                     </tr>
                                 @endforeach
@@ -214,6 +224,47 @@
             </div>
             <!--/div-->
             <!-- row closed -->
+
+            <!-- Modal تغيير حالة الفاتورة -->
+            <div class="modal fade" id="statusModal" tabindex="-1" role="dialog" aria-labelledby="statusModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <form method="POST" action="{{ route('invoice.updateStatus', $invoice->id) }}">
+                        @csrf
+                        <input type="hidden" name="invoice_id" id="modal_invoice_id">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">تغيير حالة الفاتورة</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="إغلاق">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <p><strong>رقم الفاتورة:</strong> <span id="modal_invoice_number"></span></p>
+                                <div class="form-group">
+                                    <label for="status">الحالة الجديدة</label>
+                                    <select name="status" class="form-control" required>
+                                        <option value="paid">مدفوعة</option>
+                                        <option value="unpaid">غير مدفوعة</option>
+                                        <option value="partial">مدفوعة جزئياً</option>
+                                        <option value="overdue">متأخرة</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="updated_at">تاريخ التعديل</label>
+                                    <input type="date" name="payment_date" class="form-control"
+                                           value="{{ now()->toDateString() }}">
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-success">حفظ التغييرات</button>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">إلغاء</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
 
             <!-- Force Delete Modal -->
             <div class="modal" id="forceDeleteModal">
@@ -334,6 +385,22 @@
                     // Update the form action dynamically
                     modal.find('form#deleteForm').attr('action', '/invoice/' + id);
                 })
+            </script>
+
+            <script>
+                $('#statusModal').on('show.bs.modal', function (event) {
+                    var button = $(event.relatedTarget);
+                    var invoiceId = button.data('id');
+                    var status = button.data('status');
+                    var invoiceNumber = button.data('invoice_number');
+                    var updatedAt = button.data('last_updated');
+
+                    var modal = $(this);
+                    modal.find('#modal_invoice_id').val(invoiceId);
+                    modal.find('#modal_invoice_number').text(invoiceNumber);
+                    modal.find('#modal_status').val(status);
+                    modal.find('#modal_updated_at').val(updatedAt ? updatedAt.split('T')[0] : '');
+                });
             </script>
 
 @endsection

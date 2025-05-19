@@ -7,6 +7,7 @@ use App\Models\InvoicesAttachment;
 use App\Models\InvoicesDetails;
 use App\Models\Product;
 use App\Models\Section;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -111,7 +112,7 @@ class InvoicesController extends Controller
             $file->move(public_path('attachments/' . $invoice->invoice_number), $file_name);
 
             // Store file name in the database using the InvoicesAttachment model
-            \App\Models\InvoicesAttachment::create([
+            InvoicesAttachment::create([
                 'file_name' => $file_name,
                 'invoice_number' => $invoice->invoice_number,
                 'created_by' => Auth::user()->name,
@@ -216,7 +217,7 @@ class InvoicesController extends Controller
                 ]
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return redirect()->back()
                 ->with('error', 'حدث خطأ أثناء التحديث: ' . $e->getMessage());
         }
@@ -274,6 +275,47 @@ class InvoicesController extends Controller
             'notif' => [
                 'msg' => 'تم حذف الفاتورة والمرفقات نهائيًا',
                 'type' => 'error'
+            ]
+        ]);
+    }
+
+    public function updateStatus(Request $request, $id)
+    {
+        $invoice = Invoice::findOrFail($id);
+
+        // Determine the numeric value based on the status text
+        $status = $request->status;
+        $status_value = match ($status) {
+            'unpaid' => 0,
+            'paid' => 1,
+            'partial' => 2,
+            'overdue' => 3,
+            default => 0,
+        };
+
+        // Update invoice main status and value
+        $invoice->status = $status;
+        $invoice->status_value = $status_value;
+        $invoice->updated_at = now();
+        $invoice->save();
+
+        // Create a new record in the invoice details table for tracking
+        InvoicesDetails::create([
+            'invoice_id' => $invoice->id,
+            'invoice_number' => $invoice->invoice_number,
+            'product' => $invoice->product->product_name ?? 'Unknown',
+            'section' => $invoice->section->section_name ?? 'Unknown',
+            'status' => $status,
+            'status_value' => $status_value,
+            'payment_date' => $status === 'paid' ? now()->toDateString() : null,
+            'note' => $request->note ?? null,
+            'user' => auth()->user()->name,
+        ]);
+
+        return redirect()->back()->with([
+            'notif' => [
+                'msg' => 'تم تحديث حالة الفاتورة وتسجيل التفاصيل بنجاح',
+                'type' => 'success'
             ]
         ]);
     }
