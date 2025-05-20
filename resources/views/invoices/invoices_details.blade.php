@@ -74,7 +74,7 @@
                                         <!-- Invoice Info Tab -->
                                         <div class="tab-pane active" id="tab4">
                                             <div class="table-responsive mt-15">
-                                                <table class="table table-striped table-bordered table-hover table-striped mb-4">
+                                                <table class="table table-striped table-bordered table-hover mb-4">
                                                     <tbody>
                                                     <tr class="bg-light">
                                                         <th scope="row" class="w-25 font-weight-bold text-dark">رقم
@@ -171,7 +171,7 @@
                                         <!-- Payment Status Tab -->
                                         <div class="tab-pane" id="tab5">
                                             <div class="table-responsive mt-15">
-                                                <table class="table table-hover text-center mb-0">
+                                                <table class="table table-striped table-hover text-center mb-0">
                                                     <thead>
                                                     <tr>
                                                         <th>#</th>
@@ -218,20 +218,26 @@
                                         <!-- Attachments Tab -->
                                         <div class="tab-pane" id="tab6">
                                             <div class="card card-statistics">
-                                                    <div class="card-body">
-                                                        <p class="text-danger">* صيغة المرفق: pdf, jpeg, jpg, png</p>
-                                                        <h5 class="card-title">إضافة مرفقات</h5>
-                                                        <form method="post" action="{{ route('invoices.attachments.store', $invoices->id) }}" enctype="multipart/form-data">
-                                                            @csrf
-                                                            <div class="custom-file">
-                                                                <input type="file" class="custom-file-input" id="customFile" name="file_name" required>
-                                                                <input type="hidden" name="invoice_number" value="{{ $invoices->invoice_number }}">
-                                                                <label class="custom-file-label" for="customFile">حدد المرفق</label>
-                                                            </div>
-                                                            <br><br>
-                                                            <button type="submit" class="btn btn-primary btn-sm">تأكيد</button>
-                                                        </form>
-                                                    </div>
+                                                <div class="card-body">
+                                                    <p class="text-danger">* صيغة المرفق: pdf, jpeg, jpg, png</p>
+                                                    <h5 class="card-title">إضافة مرفقات</h5>
+                                                    <form method="post"
+                                                          action="{{ route('invoices.attachments.store', $invoices->id) }}"
+                                                          enctype="multipart/form-data">
+                                                        @csrf
+                                                        <div class="custom-file">
+                                                            <input type="file" class="custom-file-input" id="customFile"
+                                                                   name="file_name" required>
+                                                            <input type="hidden" name="invoice_number"
+                                                                   value="{{ $invoices->invoice_number }}">
+                                                            <label class="custom-file-label" for="customFile">حدد
+                                                                المرفق</label>
+                                                        </div>
+                                                        <br><br>
+                                                        <button type="submit" class="btn btn-primary btn-sm">تأكيد
+                                                        </button>
+                                                    </form>
+                                                </div>
                                                 <div class="table-responsive mt-15">
                                                     <table class="table table-hover text-center mb-0">
                                                         <thead>
@@ -360,11 +366,11 @@
             }
         });
     </script>
-{{--    <script>--}}
-{{--        // Display the selected file name => JQuery--}}
-{{--        $('.custom-file-input').on('change', function () {--}}
-{{--            var fileName = $(this).val().split('\\').pop();--}}
-{{--            $(this).siblings('.custom-file-label').addClass('selected').html(fileName);--}}
-{{--        });--}}
-{{--    </script>--}}
+    {{--    <script>--}}
+    {{--        // Display the selected file name => JQuery--}}
+    {{--        $('.custom-file-input').on('change', function () {--}}
+    {{--            var fileName = $(this).val().split('\\').pop();--}}
+    {{--            $(this).siblings('.custom-file-label').addClass('selected').html(fileName);--}}
+    {{--        });--}}
+    {{--    </script>--}}
 @endsection

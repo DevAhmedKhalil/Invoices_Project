@@ -225,7 +225,7 @@
             <!--/div-->
             <!-- row closed -->
 
-            <!-- Modal تغيير حالة الفاتورة -->
+            <!-- Change Status Modal -->
             <div class="modal fade" id="statusModal" tabindex="-1" role="dialog" aria-labelledby="statusModalLabel"
                  aria-hidden="true">
                 <div class="modal-dialog" role="document">
@@ -241,6 +241,7 @@
                             </div>
                             <div class="modal-body">
                                 <p><strong>رقم الفاتورة:</strong> <span id="modal_invoice_number"></span></p>
+
                                 <div class="form-group">
                                     <label for="status">الحالة الجديدة</label>
                                     <select name="status" class="form-control" required>
@@ -250,12 +251,20 @@
                                         <option value="overdue">متأخرة</option>
                                     </select>
                                 </div>
+
                                 <div class="form-group">
-                                    <label for="updated_at">تاريخ التعديل</label>
+                                    <label for="payment_date">تاريخ التعديل</label>
                                     <input type="date" name="payment_date" class="form-control"
                                            value="{{ now()->toDateString() }}">
                                 </div>
+
+                                <div class="form-group">
+                                    <label for="note">ملاحظات</label>
+                                    <textarea name="note" class="form-control" rows="3"
+                                              placeholder="أدخل ملاحظاتك هنا..."></textarea>
+                                </div>
                             </div>
+
                             <div class="modal-footer">
                                 <button type="submit" class="btn btn-success">حفظ التغييرات</button>
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">إلغاء</button>
@@ -264,7 +273,6 @@
                     </form>
                 </div>
             </div>
-
 
             <!-- Force Delete Modal -->
             <div class="modal" id="forceDeleteModal">
