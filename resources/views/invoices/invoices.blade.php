@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="{{ asset('css/custom.css') }}">
+
 @extends('layouts.master')
 
 @section('title')
@@ -90,11 +92,12 @@
                                 اضافة فاتورة
                             </a>
                         </div>
-
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table id="example1" class="table key-buttons text-md-nowrap" data-page-length="50">
+                            <table id="example1"
+                                   class="table table-striped key-buttons text-md-nowrap table-rows-lg"
+                                   data-page-length="50">
                                 <thead>
                                 <tr>
                                     <th class="border-bottom-0">#</th>
@@ -155,25 +158,25 @@
                                                         default => 'text-dark',
                                                     } }}
                                                ">
-                                                {{ $invoice->status }}
+                                                {{$invoice->status_arabic }}
                                             </div>
                                         </td>
                                         <td>
                                             <div class=" sticky-cell
                                             ">{{ $invoice->note }}</div>
                                         </td>
-                                        <td class="text-center text-nowrap">
+                                        <td class="text-center">
                                             <div class="dropdown">
-                                                <button class="btn btn-primary btn-sm p-1 d-flex align-items-center justify-content-center"
+                                                <button class="btn btn-primary btn-sm px-2 py-1 d-flex align-items-center justify-content-center"
                                                         type="button"
                                                         id="dropdownMenuButton{{ $invoice->id }}"
                                                         data-toggle="dropdown"
                                                         aria-haspopup="true"
-                                                        aria-expanded="false"
-                                                        style="width: 30px; height: 30px;">
-                                                    <i class="las la-cog"></i>
+                                                        aria-expanded="false">
+                                                    <i class="las la-cog me-1"></i> العمليات
                                                 </button>
-                                                <div class="dropdown-menu"
+
+                                                <div class="dropdown-menu custom-dropdown"
                                                      aria-labelledby="dropdownMenuButton{{ $invoice->id }}">
 
                                                     {{-- Edit --}}
@@ -211,6 +214,10 @@
                                                         <i class="las la-sync"></i> تغيير حالة الفاتورة
                                                     </button>
 
+
+                                                    <button class="btn btn-sm btn-outline-light w-100"
+                                                            onclick="closeDropdown()">X
+                                                    </button>
                                                 </div>
                                             </div>
                                         </td>

@@ -17,6 +17,17 @@ class Invoice extends Model
 
     protected $guarded = [];
 
+    public function getStatusArabicAttribute(): string
+    {
+        return match ($this->status) {
+            'paid' => 'مدفوعة',
+            'unpaid' => 'غير مدفوعة',
+            'partial' => 'مدفوعة جزئياً',
+            'overdue' => 'متأخرة',
+            default => 'غير معروفة',
+        };
+    }
+
     public function attachments(): HasMany
     {
         return $this->hasMany(InvoicesAttachment::class, 'invoice_id');

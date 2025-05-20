@@ -1,0 +1,7 @@
+.table-rows-lg thead th,
+.table-rows-lg tbody td {
+    padding-top: 1.5rem !important;
+    padding-bottom: 1.5rem !important;
+    vertical-align: middle !important;
+    font-size: 18px !important;
+}
