@@ -326,4 +326,16 @@ class InvoicesController extends Controller
         return view('invoices.invoicesPaid', compact('invoices'));
     }
 
+    public function invoiceUnpaid()
+    {
+        $invoices = Invoice::where('status_value', 0)->get();
+        return view('invoices.invoicesUnpaid', compact('invoices'));
+    }
+
+    public function invoicePartial()
+    {
+        $invoices = Invoice::where('status_value', 2)->get();
+        return view('invoices.invoicesPartial', compact('invoices'));
+    }
+
 }
