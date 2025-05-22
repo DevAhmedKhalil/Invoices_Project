@@ -58,6 +58,10 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/edit-invoice/{invoiceId}', [InvoicesController::class, 'edit'])->name('invoices.edit');
 
+    Route::get('invoice-paid', [InvoicesController::class, 'invoicePaid'])->name('invoice.paid');
+//    Route::get('invoice-unpaid', [InvoicesController::class, 'invoiceUnpaid'])->name('invoice.unpaid');
+//    Route::get('invoice-partial', [InvoicesController::class, 'invoicePartial'])->name('invoice.partial');
+
     // 🧑‍💼 Admin panel or dynamic pages
     Route::get('/{page}', [AdminController::class, 'index']);
 });

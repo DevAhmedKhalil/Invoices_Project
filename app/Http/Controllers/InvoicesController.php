@@ -320,4 +320,10 @@ class InvoicesController extends Controller
         ]);
     }
 
+    public function invoicePaid()
+    {
+        $invoices = Invoice::where('status_value', 1)->get();
+        return view('invoices.invoicesPaid', compact('invoices'));
+    }
+
 }
