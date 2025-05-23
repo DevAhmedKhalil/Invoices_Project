@@ -3,6 +3,15 @@
 @section('css')
     <style>
         @media print {
+            .no-print {
+                display: none !important;
+                visibility: hidden !important;
+                opacity: 0 !important;
+                height: 0 !important;
+                overflow: hidden !important;
+                pointer-events: none !important;
+            }
+
             body * {
                 visibility: hidden;
             }
@@ -17,20 +26,35 @@
                 top: 0;
                 width: 100%;
             }
-
-            .no-print {
-                display: none;
-            }
         }
 
         .attachment-img {
             max-width: 100%;
-            height: 150px;
+            height: 100px;
             object-fit: contain;
             border: 1px solid #ddd;
             padding: 4px;
             border-radius: 5px;
             background-color: #fff;
+            display: block;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            max-width: 100%;
+        }
+
+        .table-invoice {
+            table-layout: fixed;
+            width: 100%;
+            word-wrap: break-word;
+        }
+
+        .table-invoice td,
+        .table-invoice th {
+            white-space: normal;
+            overflow-wrap: break-word;
+            word-break: break-word;
         }
     </style>
 @endsection
@@ -145,30 +169,27 @@
                                 </tr>
                                 </tbody>
                             </table>
-
-                            @if($invoice->attachments->count())
-                                <div class="mt-5">
-                                    <h5 class="mb-3">المرفقات (صور):</h5>
-                                    <div class="row">
-                                        @foreach ($invoice->attachments as $attachment)
-                                            <div class="col-md-3 mb-3">
-                                                <img src="{{ asset('Attachments/' . $attachment->invoice_number . '/' . $attachment->file_name) }}"
-                                                     alt="مرفق الفاتورة" class="attachment-img">
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                </div>
-                            @endif
                         </div>
+
+                        @if($invoice->attachments->count())
+                            <div class="mt-5">
+                                <h5 class="mb-3">المرفقات (صور):</h5>
+                                <div class="row">
+                                    @foreach ($invoice->attachments as $attachment)
+                                        <div class="col-md-3 mb-3">
+                                            <img src="{{ asset('Attachments/' . $attachment->invoice_number . '/' . $attachment->file_name) }}"
+                                                 alt="مرفق الفاتورة" class="attachment-img">
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
 
                         <hr class="mg-b-40">
 
-                        <a class="btn btn-purple float-left mt-3 mr-2 no-print" href="#"><i
-                                    class="mdi mdi-currency-usd ml-1"></i> دفع الآن</a>
-                        <a href="#" class="btn btn-danger float-left mt-3 mr-2 no-print" id="printInvoiceBtn"><i
-                                    class="mdi mdi-printer ml-1"></i> طباعة الفاتورة</a>
-                        <a href="#" class="btn btn-success float-left mt-3 no-print"><i
-                                    class="mdi mdi-telegram ml-1"></i> إرسال الفاتورة</a>
+                        <a href="#" class="btn btn-danger float-left mt-3 mr-2 no-print" id="printInvoiceBtn">
+                            <i class="mdi mdi-printer ml-1"></i> طباعة الفاتورة
+                        </a>
                     </div>
                 </div>
             </div>
