@@ -242,7 +242,7 @@ class InvoicesController extends Controller
         // Step 4: Redirect back with a success notification
         return redirect()->route('invoice.index')->with([
             'notif' => [
-                'msg' => 'تم حذف الفاتورة بنجاح',
+                'msg' => 'تم أرشفة الفاتورة بنجاح',
                 'type' => 'success'
             ]
         ]);
@@ -336,6 +336,25 @@ class InvoicesController extends Controller
     {
         $invoices = Invoice::where('status_value', 2)->get();
         return view('invoices.invoicesPartial', compact('invoices'));
+    }
+
+    public function invoiceArchived()
+    {
+        $invoices = Invoice::onlyTrashed()->get();
+        return view('invoices.invoicesArchived', compact('invoices'));
+    }
+
+    public function restore(string $id)
+    {
+        $invoice = Invoice::onlyTrashed()->findOrFail($id);
+        $invoice->restore();
+
+        return redirect()->route('invoice.archived')->with([
+            'notif' => [
+                'msg' => 'تم استعادة الفاتورة بنجاح.',
+                'type' => 'success'
+            ]
+        ]);
     }
 
 }

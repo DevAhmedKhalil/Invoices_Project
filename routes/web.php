@@ -62,6 +62,10 @@ Route::middleware('auth')->group(function () {
     Route::get('invoice-unpaid', [InvoicesController::class, 'invoiceUnpaid'])->name('invoice.unpaid');
     Route::get('invoice-partial', [InvoicesController::class, 'invoicePartial'])->name('invoice.partial');
 
+    Route::get('invoice-archived', [InvoicesController::class, 'invoiceArchived'])->name('invoice.archived');
+    Route::patch('/invoices/{id}/restore', [InvoicesController::class, 'restore'])->name('invoices.restore');
+
+
     // 🧑‍💼 Admin panel or dynamic pages
     Route::get('/{page}', [AdminController::class, 'index']);
 });

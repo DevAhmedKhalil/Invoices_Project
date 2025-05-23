@@ -3,7 +3,7 @@
 @extends('layouts.master')
 
 @section('title')
-    قائمة الفواتير
+    قائمة الفواتير المؤرشفة
 @endsection
 
 @section('css')
@@ -22,10 +22,9 @@
     <div class="breadcrumb-header justify-content-between">
         <div class="my-auto">
             <div class="d-flex">
-                <h4 class="content-title mb-0 my-auto">الفواتير</h4><span class="text-muted mt-1 tx-13 mr-2 mb-0">/ قائمة الفواتير</span>
+                <h4 class="content-title mb-0 my-auto">الفواتير</h4><span class="text-muted mt-1 tx-13 mr-2 mb-0">/     قائمة الفواتير المؤرشفة</span>
             </div>
         </div>
-        {{--					<div class="d-flex my-xl-auto right-content"></div>--}}
     </div>
     <!-- breadcrumb -->
 @endsection
@@ -185,13 +184,13 @@
                                                         <i class="las la-pen"></i> تعديل
                                                     </a>
 
-                                                    {{-- Soft Delete --}}
-                                                    <button class="dropdown-item text-secondary"
+                                                    {{-- Restore Archived Invoice --}}
+                                                    <button class="dropdown-item text-success"
                                                             data-toggle="modal"
-                                                            data-target="#deleteModal"
+                                                            data-target="#restoreModal"
                                                             data-id="{{ $invoice->id }}"
                                                             data-invoice_number="{{ $invoice->invoice_number }}">
-                                                        <i class="las la-archive"></i> أرشفة
+                                                        <i class="las la-undo-alt"></i> استعادة
                                                     </button>
 
                                                     {{-- Force Delete --}}
@@ -204,7 +203,7 @@
                                                     </button>
 
                                                     {{-- Change Status --}}
-                                                    <button class="dropdown-item text-warning"
+                                                    <button class="dropdown-item text-warning open-status-modal"
                                                             data-toggle="modal"
                                                             data-target="#statusModal"
                                                             data-id="{{ $invoice->id }}"
@@ -235,9 +234,10 @@
             <div class="modal fade" id="statusModal" tabindex="-1" role="dialog" aria-labelledby="statusModalLabel"
                  aria-hidden="true">
                 <div class="modal-dialog" role="document">
-                    <form method="POST" action="{{ route('invoice.updateStatus', $invoice->id) }}">
+                    <form method="POST" id="statusForm" action="">
                         @csrf
                         <input type="hidden" name="invoice_id" id="modal_invoice_id">
+
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h5 class="modal-title">تغيير حالة الفاتورة</h5>
@@ -245,6 +245,7 @@
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
+
                             <div class="modal-body">
                                 <p><strong>رقم الفاتورة:</strong> <span id="modal_invoice_number"></span></p>
 
@@ -313,33 +314,33 @@
             </div>
             <!-- End Force Delete Modal -->
 
-            <!-- Delete modal [Archived] -->
-            <div class="modal" id="deleteModal">
+            <!-- Restore modal -->
+            <div class="modal" id="restoreModal">
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content modal-content-demo">
                         <div class="modal-header">
-                            <h6 class="modal-title">ارشفة المنتج</h6>
+                            <h6 class="modal-title">استعادة الفاتورة المؤرشفة</h6>
                             <button aria-label="Close" class="close" data-dismiss="modal"
                                     type="button"><span aria-hidden="true">&times;</span></button>
                         </div>
-                        <form id="deleteForm" method="post">
-                            @method("DELETE")
+                        <form id="restoreForm" method="post">
+                            @method("PATCH")
                             @csrf
                             <div class="modal-body">
-                                <p>هل انت متاكد من عملية الارشفة ؟</p><br>
-                                <input type="hidden" name="id" id="id" value="">
-                                <input class="form-control" name="invoice_name" id="invoice_name" type="text"
-                                       readonly>
+                                <p>هل أنت متأكد أنك تريد استعادة هذه الفاتورة؟</p><br>
+                                <input type="hidden" name="id" id="restore_id" value="">
+                                <input class="form-control" name="invoice_number" id="restore_invoice_number"
+                                       type="text" readonly>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">الغاء</button>
-                                <button type="submit" class="btn btn-danger">تاكيد</button>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">إلغاء</button>
+                                <button type="submit" class="btn btn-success">تأكيد الاستعادة</button>
                             </div>
                         </form>
                     </div>
                 </div>
             </div>
-            <!--End Delete modal -->
+            <!--End Restore modal-->
 
         </div>
         <!-- Container closed -->
@@ -388,32 +389,39 @@
             </script>
 
             <script>
-                $('#deleteModal').on('show.bs.modal', function (event) {
-                    var button = $(event.relatedTarget)
-                    var id = button.data('id')
-                    var invoice_number = button.data('invoice_number')
-                    var modal = $(this)
-                    modal.find('.modal-body #id').val(id);
-                    modal.find('.modal-body #invoice_name').val(invoice_number);
+                $('#restoreModal').on('show.bs.modal', function (event) {
+                    var button = $(event.relatedTarget);
+                    var id = button.data('id');
+                    var invoiceNumber = button.data('invoice_number');
 
-                    // Update the form action dynamically
-                    modal.find('form#deleteForm').attr('action', '/invoice/' + id);
-                })
+                    var modal = $(this);
+                    modal.find('#restore_id').val(id);
+                    modal.find('#restore_invoice_number').val(invoiceNumber);
+
+                    var formAction = `/invoices/${id}/restore`;
+                    modal.find('#restoreForm').attr('action', formAction);
+                });
             </script>
 
             <script>
-                $('#statusModal').on('show.bs.modal', function (event) {
-                    var button = $(event.relatedTarget);
-                    var invoiceId = button.data('id');
-                    var status = button.data('status');
-                    var invoiceNumber = button.data('invoice_number');
-                    var updatedAt = button.data('last_updated');
+                document.addEventListener('DOMContentLoaded', function () {
+                    document.querySelectorAll('.open-status-modal').forEach(button => {
+                        button.addEventListener('click', function () {
+                            const invoiceId = this.dataset.id;
+                            const invoiceNumber = this.dataset.invoice_number;
 
-                    var modal = $(this);
-                    modal.find('#modal_invoice_id').val(invoiceId);
-                    modal.find('#modal_invoice_number').text(invoiceNumber);
-                    modal.find('#modal_status').val(status);
-                    modal.find('#modal_updated_at').val(updatedAt ? updatedAt.split('T')[0] : '');
+                            // تحديث action بناءً على رقم الفاتورة
+                            const form = document.getElementById('statusForm');
+                            form.action = `/invoice/status/${invoiceId}`;
+
+                            // تعبئة بيانات المودال
+                            document.getElementById('modal_invoice_id').value = invoiceId;
+                            document.getElementById('modal_invoice_number').textContent = invoiceNumber;
+
+                            // عرض المودال
+                            $('#statusModal').modal('show');
+                        });
+                    });
                 });
             </script>
 

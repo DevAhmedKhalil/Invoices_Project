@@ -48,10 +48,21 @@
                     </svg>
                     <span class="side-menu__label">الفواتير</span><i class="angle fe fe-chevron-down"></i></a>
                 <ul class="slide-menu">
-                    <li><a class="slide-item" href="{{ url('/' . $page='invoice') }}">قائمة الفواتير</a></li>
-                    <li><a class="slide-item" href="{{ url('/' . $page='invoice-paid') }}">الفواتير المدفوعة</a></li>
-                    <li><a class="slide-item" href="{{ url('/' . $page='invoice-unpaid') }}">الفواتير الغير مدفوعة</a></li>
-                    <li><a class="slide-item" href="{{ url('/' . $page='invoice-partial') }}">الفواتير المدفوعة جزئيا</a></li>
+                    <li>
+                        <a class="slide-item" href="{{ url('/' . $page='invoice') }}">قائمة الفواتير</a>
+                    </li>
+                    <li>
+                        <a class="slide-item" href="{{ url('/' . $page='invoice-paid') }}">الفواتير المدفوعة</a>
+                    </li>
+                    <li>
+                        <a class="slide-item" href="{{ url('/' . $page='invoice-unpaid') }}">الفواتير الغير مدفوعة</a>
+                    </li>
+                    <li><a class="slide-item" href="{{ url('/' . $page='invoice-partial') }}">الفواتير المدفوعة
+                            جزئيا</a>
+                    </li>
+                    <li>
+                        <a class="slide-item" href="{{ url('/' . $page='invoice-archived') }}">الفواتير المؤرشفة</a>
+                    </li>
                 </ul>
             </li>
 
