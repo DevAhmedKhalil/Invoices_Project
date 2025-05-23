@@ -65,6 +65,8 @@ Route::middleware('auth')->group(function () {
     Route::get('invoice-archived', [InvoicesController::class, 'invoiceArchived'])->name('invoice.archived');
     Route::patch('/invoices/{id}/restore', [InvoicesController::class, 'restore'])->name('invoices.restore');
 
+    Route::get('/invoice/print/{id}', [InvoicesController::class, 'print'])->name('invoice.print');
+
 
     // 🧑‍💼 Admin panel or dynamic pages
     Route::get('/{page}', [AdminController::class, 'index']);

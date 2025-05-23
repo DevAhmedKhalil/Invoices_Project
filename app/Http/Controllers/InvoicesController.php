@@ -132,10 +132,14 @@ class InvoicesController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Invoice $invoices)
+    public function show($id)
     {
-        //
+        $invoice = Invoice::with('details')->findOrFail($id);
+        $details = $invoice->details;
+
+        return view('invoices.print_invoice', compact('invoice', 'details'));
     }
+
 
     /**
      * Show the form for editing the specified resource.
@@ -356,5 +360,12 @@ class InvoicesController extends Controller
             ]
         ]);
     }
+
+    public function print($id)
+    {
+        $invoice = Invoice::with('details', 'attachments')->findOrFail($id);
+        return view('invoices.print_invoice', compact('invoice'));
+    }
+
 
 }

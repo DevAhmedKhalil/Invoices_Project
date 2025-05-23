@@ -214,6 +214,13 @@
                                                         <i class="las la-sync"></i> تغيير حالة الفاتورة
                                                     </button>
 
+                                                    <a class="dropdown-item text-primary"
+                                                       href="{{ route('invoice.print', $invoice->id) }}"
+                                                       target="_blank">
+                                                        <i class="las la-print"></i> طباعة
+                                                    </a>
+
+
                                                     <button class="btn btn-sm btn-outline-light w-100"
                                                             onclick="closeDropdown()">X
                                                     </button>

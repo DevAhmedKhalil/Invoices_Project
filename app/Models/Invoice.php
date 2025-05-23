@@ -17,6 +17,13 @@ class Invoice extends Model
 
     protected $guarded = [];
 
+    protected $casts = [
+        'invoice_date' => 'datetime',
+        'due_date' => 'datetime',
+        'deleted_at' => 'datetime',
+    ];
+
+
     public function getStatusArabicAttribute(): string
     {
         return match ($this->status) {
@@ -31,6 +38,11 @@ class Invoice extends Model
     public function attachments(): HasMany
     {
         return $this->hasMany(InvoicesAttachment::class, 'invoice_id');
+    }
+
+    public function details(): HasMany
+    {
+        return $this->hasMany(InvoicesDetails::class, 'invoice_id');
     }
 
     // Relationship with Section
