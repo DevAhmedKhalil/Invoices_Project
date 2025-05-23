@@ -2,7 +2,6 @@
 
 @section('css')
     <style>
-        /* Optional: print-specific styles */
         @media print {
             body * {
                 visibility: hidden;
@@ -19,16 +18,24 @@
                 width: 100%;
             }
 
-            /* Hide buttons during print */
             .no-print {
                 display: none;
             }
+        }
+
+        .attachment-img {
+            max-width: 100%;
+            height: 150px;
+            object-fit: contain;
+            border: 1px solid #ddd;
+            padding: 4px;
+            border-radius: 5px;
+            background-color: #fff;
         }
     </style>
 @endsection
 
 @section('page-header')
-    <!-- breadcrumb -->
     <div class="breadcrumb-header justify-content-between">
         <div class="my-auto">
             <div class="d-flex">
@@ -37,11 +44,9 @@
             </div>
         </div>
     </div>
-    <!-- breadcrumb -->
 @endsection
 
 @section('content')
-    <!-- row -->
     <div class="row row-sm" id="printableArea">
         <div class="col-md-12 col-xl-12">
             <div class="main-content-body-invoice">
@@ -52,13 +57,12 @@
                             <div class="billed-from">
                                 <h6>{{ config('app.name', 'Your Company') }}</h6>
                                 <p>
-                                    {{ $invoice->company_address ?? '201 Something St., Something Town, YT 242, Country 6546' }}
-                                    <br>
+                                    {{ $invoice->company_address ?? '201 Something St., Something Town' }}<br>
                                     Tel No: {{ $invoice->company_phone ?? '324 445-4544' }}<br>
                                     Email: {{ $invoice->company_email ?? 'info@company.com' }}
                                 </p>
-                            </div><!-- billed-from -->
-                        </div><!-- invoice-header -->
+                            </div>
+                        </div>
 
                         <div class="row mg-t-20">
                             <div class="col-md">
@@ -74,14 +78,17 @@
                             </div>
                             <div class="col-md">
                                 <label class="tx-gray-600">معلومات الفاتورة</label>
-                                <p class="invoice-info-row"><span>رقم الفاتورة</span>
-                                    <span>{{ $invoice->invoice_number }}</span></p>
-                                <p class="invoice-info-row"><span>تاريخ الإصدار</span>
-                                    <span>{{ $invoice->invoice_date->format('d-m-Y') }}</span></p>
-                                <p class="invoice-info-row"><span>تاريخ الاستحقاق</span>
-                                    <span>{{ $invoice->due_date->format('d-m-Y') }}</span></p>
-                                <p class="invoice-info-row"><span>حالة الفاتورة</span>
-                                    <span>{{ $invoice->getStatusArabicAttribute() }}</span></p>
+                                <p class="invoice-info-row">
+                                    <span>رقم الفاتورة</span><span>{{ $invoice->invoice_number }}</span></p>
+                                <p class="invoice-info-row">
+                                    <span>تاريخ الإصدار</span><span>{{ $invoice->invoice_date->format('d-m-Y') }}</span>
+                                </p>
+                                <p class="invoice-info-row">
+                                    <span>تاريخ الاستحقاق</span><span>{{ $invoice->due_date->format('d-m-Y') }}</span>
+                                </p>
+                                <p class="invoice-info-row">
+                                    <span>حالة الفاتورة</span><span>{{ $invoice->getStatusArabicAttribute() }}</span>
+                                </p>
                             </div>
                         </div>
 
@@ -97,7 +104,6 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-
                                 @foreach ($invoice->details as $detail)
                                     <tr>
                                         <td>{{ $detail->product }}</td>
@@ -111,50 +117,63 @@
                                     <td class="valign-middle" colspan="2" rowspan="4">
                                         <div class="invoice-notes">
                                             <label class="main-content-label tx-13">ملاحظات</label>
-                                            <p>{{ $invoice->notes ?? 'لا توجد ملاحظات' }}</p>
-                                        </div><!-- invoice-notes -->
+                                            <p>{{ $invoice->note ?? 'لا توجد ملاحظات' }}</p>
+                                        </div>
                                     </td>
                                     <td class="tx-right">الإجمالي الفرعي</td>
-                                    <td class="tx-right"
-                                        colspan="2">{{ number_format($invoice->subtotal, 2) }} {{ $invoice->currency ?? '$' }}</td>
+                                    <td class="tx-right" colspan="2">
+                                        {{ number_format($invoice->amount_commission, 2) }} {{ $invoice->currency ?? '$' }}
+                                    </td>
                                 </tr>
                                 <tr>
-                                    <td class="tx-right">الضريبة ({{ $invoice->tax_rate ?? 0 }}%)</td>
-                                    <td class="tx-right"
-                                        colspan="2">{{ number_format($invoice->tax_amount, 2) }} {{ $invoice->currency ?? '$' }}</td>
+                                    <td class="tx-right">الضريبة ({{ $invoice->rate_vat }}%)</td>
+                                    <td class="tx-right" colspan="2">
+                                        {{ number_format($invoice->value_vat, 2) }} {{ $invoice->currency ?? '$' }}
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td class="tx-right">الخصم</td>
-                                    <td class="tx-right"
-                                        colspan="2">{{ number_format($invoice->discount, 2) }} {{ $invoice->currency ?? '$' }}</td>
+                                    <td class="tx-right" colspan="2">
+                                        {{ number_format($invoice->discount, 2) }} {{ $invoice->currency ?? '$' }}
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td class="tx-right tx-uppercase tx-bold tx-inverse">الإجمالي المستحق</td>
                                     <td class="tx-right" colspan="2">
-                                        <h4 class="tx-primary tx-bold">{{ number_format($invoice->total_due, 2) }} {{ $invoice->currency ?? '$' }}</h4>
+                                        <h4 class="tx-primary tx-bold">{{ number_format($invoice->total, 2) }} {{ $invoice->currency ?? '$' }}</h4>
                                     </td>
                                 </tr>
                                 </tbody>
                             </table>
+
+                            @if($invoice->attachments->count())
+                                <div class="mt-5">
+                                    <h5 class="mb-3">المرفقات (صور):</h5>
+                                    <div class="row">
+                                        @foreach ($invoice->attachments as $attachment)
+                                            <div class="col-md-3 mb-3">
+                                                <img src="{{ asset('Attachments/' . $attachment->invoice_number . '/' . $attachment->file_name) }}"
+                                                     alt="مرفق الفاتورة" class="attachment-img">
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endif
                         </div>
 
                         <hr class="mg-b-40">
 
-                        <a class="btn btn-purple float-left mt-3 mr-2 no-print" href="#">
-                            <i class="mdi mdi-currency-usd ml-1"></i> دفع الآن
-                        </a>
-                        <a href="#" class="btn btn-danger float-left mt-3 mr-2 no-print" id="printInvoiceBtn">
-                            <i class="mdi mdi-printer ml-1"></i> طباعة الفاتورة
-                        </a>
-                        <a href="#" class="btn btn-success float-left mt-3 no-print">
-                            <i class="mdi mdi-telegram ml-1"></i> إرسال الفاتورة
-                        </a>
+                        <a class="btn btn-purple float-left mt-3 mr-2 no-print" href="#"><i
+                                    class="mdi mdi-currency-usd ml-1"></i> دفع الآن</a>
+                        <a href="#" class="btn btn-danger float-left mt-3 mr-2 no-print" id="printInvoiceBtn"><i
+                                    class="mdi mdi-printer ml-1"></i> طباعة الفاتورة</a>
+                        <a href="#" class="btn btn-success float-left mt-3 no-print"><i
+                                    class="mdi mdi-telegram ml-1"></i> إرسال الفاتورة</a>
                     </div>
                 </div>
             </div>
-        </div><!-- COL-END -->
+        </div>
     </div>
-    <!-- row closed -->
 @endsection
 
 @section('js')
