@@ -86,14 +86,13 @@
 
                             <div class="col">
                                 <label>تاريخ الفاتورة</label>
-                                <input class="form-control fc-datepicker" name="invoice_date" placeholder="YYYY-MM-DD"
-                                       type="text" value="{{ date('Y-m-d') }}" required>
+                                <input class="form-control" name="invoice_date" placeholder="YYYY-MM-DD" type="date" value="{{ date('Y-m-d') }}" required onfocus="this.showPicker()" onkeydown="return false;">
                             </div>
 
                             <div class="col">
                                 <label>تاريخ الاستحقاق</label>
-                                <input class="form-control fc-datepicker" name="due_date" placeholder="YYYY-MM-DD"
-                                       type="text" required>
+{{--                                <input class="form-control fc-datepicker" name="due_date" placeholder="YYYY-MM-DD" type="date" id="due_date" required>--}}
+                                <input class="form-control" name="due_date" type="date" id="due_date" required onfocus="this.showPicker()" onkeydown="return false;">
                             </div>
 
                         </div>
@@ -301,6 +300,12 @@
                 document.getElementById("total").value = sumt;
             }
         }
+    </script>
+
+    <script>
+        const input = document.getElementById('due_date');
+        const today = new Date().toISOString().split('T')[0]; // Format as YYYY-MM-DD
+        input.min = today; // Disable past days
     </script>
 
 @endsection
