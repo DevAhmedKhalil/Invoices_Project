@@ -17,6 +17,10 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+
+            $table->text('roles_name')->nullable(); // nullable in case not assigned at creation
+            $table->string('status', 10)->default('مفعل');
+
             $table->rememberToken();
             $table->timestamps();
         });
