@@ -68,6 +68,8 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/invoice/print/{id}', [InvoicesController::class, 'print'])->name('invoice.print');
 
+    Route::get('/invoices/export', [InvoicesController::class, 'export'])->name('invoices.export');
+
     // 🧑‍💼 Admin panel or dynamic pages
     Route::get('/{page}', [AdminController::class, 'index']);
 });

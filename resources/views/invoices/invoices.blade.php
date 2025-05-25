@@ -16,6 +16,16 @@
     <link href="{{URL::asset('assets/plugins/select2/css/select2.min.css')}}" rel="stylesheet">
     <!--Internal   Notify -->
     <link href="{{URL::asset('assets/plugins/notify/css/notifIt.css')}}" rel="stylesheet"/>
+
+    <style>
+        /* Ensure the start button remains stable when pressed or focused */
+        a.btn-outline-success:focus,
+        a.btn-outline-success:active {
+            color: #198754 !important;
+            background-color: transparent !important;
+            border-color: #198754 !important;
+        }
+    </style>
 @endsection
 @section('page-header')
     <!-- breadcrumb -->
@@ -85,14 +95,20 @@
         <div class="col-xl-12">
             <div class="card mg-b-20">
                 <div class="card-header pb-0">
-                    <div class="d-flex justify-content-center">
-                        <div class="">
-                            <a class="btn btn-outline-primary btn-block"
-                               href="{{ route('invoice.create') }}">
-                                اضافة فاتورة
+                    <div class="d-flex justify-content-center mt-3">
+                        <div class="mx-2">
+                            <a class="btn btn-outline-primary" href="{{ route('invoice.create') }}">
+                                ➕ إضافة فاتورة
+                            </a>
+                        </div>
+                        <div class="mx-2">
+                            <a class="btn btn-outline-success" href="{{ route('invoices.export') }}">
+                                📥 تصدير Excel
                             </a>
                         </div>
                     </div>
+
+
                     <div class="card-body">
                         <div class="table-responsive">
                             <table id="example1"
