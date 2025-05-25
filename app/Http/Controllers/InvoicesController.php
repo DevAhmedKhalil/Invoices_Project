@@ -7,11 +7,13 @@ use App\Models\InvoicesAttachment;
 use App\Models\InvoicesDetails;
 use App\Models\Product;
 use App\Models\Section;
+use App\Notifications\AddInvoice;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Notification;
 
 class InvoicesController extends Controller
 {
@@ -49,6 +51,7 @@ class InvoicesController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+
     public function store(Request $request)
     {
         // Validate the incoming request data
@@ -58,8 +61,8 @@ class InvoicesController extends Controller
             'due_date' => 'required|date|after_or_equal:invoice_date',
             'section_id' => 'required|exists:sections,id',
             'product_id' => 'required|exists:products,id',
-            'amount_collection' => 'nullable|numeric',
-            'amount_commission' => 'required|numeric',
+//            'amount_collection' => 'nullable|numeric',
+//            'amount_commission' => 'required|numeric',
             'discount' => 'required|numeric',
             'rate_vat' => 'required|string',
             'value_vat' => 'required|numeric',
@@ -72,15 +75,15 @@ class InvoicesController extends Controller
         $rate_vat = rtrim($validatedData['rate_vat'], '%');
         $rate_vat = (float)$rate_vat;
 
-        // Create the invoice record in the database
+        // Create the invoice record
         $invoice = Invoice::create([
             'invoice_number' => $validatedData['invoice_number'],
             'invoice_date' => $validatedData['invoice_date'],
             'due_date' => $validatedData['due_date'],
             'section_id' => $validatedData['section_id'],
             'product_id' => $validatedData['product_id'],
-            'amount_collection' => $validatedData['amount_collection'],
-            'amount_commission' => $validatedData['amount_commission'],
+//            'amount_collection' => $validatedData['amount_collection'],
+//            'amount_commission' => $validatedData['amount_commission'],
             'discount' => $validatedData['discount'],
             'rate_vat' => $rate_vat,
             'value_vat' => $validatedData['value_vat'],
@@ -88,10 +91,10 @@ class InvoicesController extends Controller
             'note' => $validatedData['note'],
             'user_id' => Auth::id(),
             'status' => 'unpaid',
-            'status_value' => 0, // 0 = unpaid
+            'status_value' => 0,
         ]);
 
-        // Save invoice details in the related table
+        // Save invoice details
         InvoicesDetails::create([
             'invoice_id' => $invoice->id,
             'invoice_number' => $request->invoice_number,
@@ -103,15 +106,12 @@ class InvoicesController extends Controller
             'user' => Auth::user()->name,
         ]);
 
-        // Handle file attachment if provided
+        // File attachment handling
         if ($request->hasFile('pic')) {
             $file = $request->file('pic');
             $file_name = $file->getClientOriginalName();
-
-            // Move the file to the public attachments directory
             $file->move(public_path('attachments/' . $invoice->invoice_number), $file_name);
 
-            // Store file name in the database using the InvoicesAttachment model
             InvoicesAttachment::create([
                 'file_name' => $file_name,
                 'invoice_number' => $invoice->invoice_number,
@@ -120,7 +120,15 @@ class InvoicesController extends Controller
             ]);
         }
 
-        // Flash success message to the session and redirect
+        // 🔔 Send notification to email
+        Notification::route('mail', config('mail.notification_email'))
+            ->notify(new AddInvoice($invoice));
+
+        auth()->user()->notify(new AddInvoice($invoice));
+
+//        dd(config('mail.notification_email'));
+
+        // Success message
         return redirect("/invoice")->with([
             'notif' => [
                 'msg' => 'تم إضافة الفاتورة بنجاح',

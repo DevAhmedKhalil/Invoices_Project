@@ -7,6 +7,7 @@ use App\Http\Controllers\InvoicesController;
 use App\Http\Controllers\InvoicesDetailsController;
 use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\SectionsController;
+use Illuminate\Mail\Message;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -66,7 +67,6 @@ Route::middleware('auth')->group(function () {
     Route::patch('/invoices/{id}/restore', [InvoicesController::class, 'restore'])->name('invoices.restore');
 
     Route::get('/invoice/print/{id}', [InvoicesController::class, 'print'])->name('invoice.print');
-
 
     // 🧑‍💼 Admin panel or dynamic pages
     Route::get('/{page}', [AdminController::class, 'index']);
