@@ -5,9 +5,8 @@
     @section('title')
         تعديل مستخدم - مورا سوفت للادارة القانونية
     @stop
-
-
 @endsection
+
 @section('page-header')
     <!-- breadcrumb -->
     <div class="breadcrumb-header justify-content-between">
@@ -20,6 +19,7 @@
     </div>
     <!-- breadcrumb -->
 @endsection
+
 @section('content')
     <!-- row -->
     <div class="row">
@@ -30,7 +30,7 @@
                     <button aria-label="Close" class="close" data-dismiss="alert" type="button">
                         <span aria-hidden="true">&times;</span>
                     </button>
-                    <strong>خطا</strong>
+                    <strong>خطأ</strong>
                     <ul>
                         @foreach ($errors->all() as $error)
                             <li>{{ $error }}</li>
@@ -47,76 +47,73 @@
                         </div>
                     </div><br>
 
-                    {!! Form::model($user, ['method' => 'PATCH','route' => ['users.update', $user->id]]) !!}
-                    <div class="">
+                    <form method="POST" action="{{ route('users.update', $user->id) }}">
+                        @csrf
+                        @method('PATCH')
 
                         <div class="row mg-b-20">
                             <div class="parsley-input col-md-6" id="fnWrapper">
                                 <label>اسم المستخدم: <span class="tx-danger">*</span></label>
-                                {!! Form::text('name', null, array('class' => 'form-control','required')) !!}
+                                <input type="text" name="name" value="{{ old('name', $user->name) }}" class="form-control" required>
                             </div>
 
                             <div class="parsley-input col-md-6 mg-t-20 mg-md-t-0" id="lnWrapper">
                                 <label>البريد الالكتروني: <span class="tx-danger">*</span></label>
-                                {!! Form::text('email', null, array('class' => 'form-control','required')) !!}
+                                <input type="email" name="email" value="{{ old('email', $user->email) }}" class="form-control" required>
                             </div>
                         </div>
 
-                    </div>
+                        <div class="row mg-b-20">
+                            <div class="parsley-input col-md-6 mg-t-20 mg-md-t-0" id="lnWrapper">
+                                <label>كلمة المرور: <span class="tx-danger">*</span></label>
+                                <input type="password" name="password" class="form-control" required>
+                            </div>
 
-                    <div class="row mg-b-20">
-                        <div class="parsley-input col-md-6 mg-t-20 mg-md-t-0" id="lnWrapper">
-                            <label>كلمة المرور: <span class="tx-danger">*</span></label>
-                            {!! Form::password('password', array('class' => 'form-control','required')) !!}
-                        </div>
-
-                        <div class="parsley-input col-md-6 mg-t-20 mg-md-t-0" id="lnWrapper">
-                            <label> تاكيد كلمة المرور: <span class="tx-danger">*</span></label>
-                            {!! Form::password('confirm-password', array('class' => 'form-control','required')) !!}
-                        </div>
-                    </div>
-
-                    <div class="row row-sm mg-b-20">
-                        <div class="col-lg-6">
-                            <label class="form-label">حالة المستخدم</label>
-                            <select name="Status" id="select-beast" class="form-control  nice-select  custom-select">
-                                <option value="{{ $user->Status}}">{{ $user->Status}}</option>
-                                <option value="مفعل">مفعل</option>
-                                <option value="غير مفعل">غير مفعل</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="row mg-b-20">
-                        <div class="col-xs-12 col-sm-12 col-md-12">
-                            <div class="form-group">
-                                <strong>نوع المستخدم</strong>
-                                {!! Form::select('roles[]', $roles,$userRole, array('class' => 'form-control','multiple'))
-                                !!}
+                            <div class="parsley-input col-md-6 mg-t-20 mg-md-t-0" id="lnWrapper">
+                                <label>تأكيد كلمة المرور: <span class="tx-danger">*</span></label>
+                                <input type="password" name="confirm-password" class="form-control" required>
                             </div>
                         </div>
-                    </div>
-                    <div class="mg-t-30">
-                        <button class="btn btn-main-primary pd-x-20" type="submit">تحديث</button>
-                    </div>
-                    {!! Form::close() !!}
+
+                        <div class="row row-sm mg-b-20">
+                            <div class="col-lg-6">
+                                <label class="form-label">حالة المستخدم</label>
+                                <select name="Status" class="form-control nice-select custom-select">
+                                    <option value="{{ $user->Status }}">{{ $user->Status }}</option>
+                                    <option value="مفعل">مفعل</option>
+                                    <option value="غير مفعل">غير مفعل</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row mg-b-20">
+                            <div class="col-xs-12 col-sm-12 col-md-12">
+                                <div class="form-group">
+                                    <strong>نوع المستخدم</strong>
+                                    <select name="roles[]" class="form-control" multiple>
+                                        @foreach($roles as $id => $name)
+                                            <option value="{{ $id }}" {{ in_array($id, $userRole) ? 'selected' : '' }}>
+                                                {{ $name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mg-t-30">
+                            <button class="btn btn-main-primary pd-x-20" type="submit">تحديث</button>
+                        </div>
+                    </form>
+
                 </div>
             </div>
         </div>
     </div>
-
-
-
-
-    </div>
     <!-- row closed -->
-    </div>
-    <!-- Container closed -->
-    </div>
-    <!-- main-content closed -->
 @endsection
-@section('js')
 
+@section('js')
     <!-- Internal Nice-select js-->
     <script src="{{URL::asset('assets/plugins/jquery-nice-select/js/jquery.nice-select.js')}}"></script>
     <script src="{{URL::asset('assets/plugins/jquery-nice-select/js/nice-select.js')}}"></script>
