@@ -29,9 +29,50 @@
 
 @section('content')
 
+    @if(session()->has('notif'))
+        <script>
+            window.onload = function () {
+                notif({
+                    msg: "{{ session('notif.msg') }}",
+                    type: "{{ session('notif.type') }}"
+                });
+            }
+        </script>
+    @elseif(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert" id="error-alert">
+            {{ session('error') }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="إغلاق">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    @endif
+
     @if (session('success'))
-        <div class="alert alert-success">
+        <div class="alert alert-success alert-dismissible fade show" role="alert" id="success-alert">
             {{ session('success') }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="إغلاق">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    @elseif (session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert" id="error-alert">
+            {{ session('error') }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="إغلاق">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    @endif
+
+    @if ($errors->any())
+        <div class="alert alert-danger alert-dismissible fade show" role="alert" id="error-alert">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+            <button type="button" class="close" data-dismiss="alert" aria-label="إغلاق">
+                <span aria-hidden="true">&times;</span>
+            </button>
         </div>
     @endif
 
@@ -93,11 +134,16 @@
                                         @endcan
 
                                         @can('حذف مستخدم')
-                                            <a class="modal-effect btn btn-sm btn-danger" data-effect="effect-scale"
-                                               data-user_id="{{ $user->id }}" data-username="{{ $user->name }}"
-                                               data-toggle="modal" href="#deleteUserModal" title="حذف">
-                                                <i class="las la-trash"></i>
-                                            </a>
+                                            <button
+                                                type="button"
+                                                class="btn btn-danger btn-sm"
+                                                data-toggle="modal"
+                                                data-target="#deleteUserModal"
+                                                data-id="{{ $user->id }}"
+                                                data-username="{{ $user->name }}"
+                                            >
+                                                حذف
+                                            </button>
                                         @endcan
                                     </td>
                                 </tr>
@@ -119,9 +165,9 @@
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <form action="{{ route('users.destroy', 'test') }}" method="post">
-                        {{ method_field('delete') }}
-                        {{ csrf_field() }}
+                    <form id="deleteUserForm" action="" method="post">
+                        @method('delete')
+                        @csrf
                         <div class="modal-body">
                             <p>هل انت متأكد من عملية الحذف ؟</p><br>
                             <input type="hidden" name="user_id" id="user_id" value="">
@@ -164,13 +210,20 @@
 
     <script>
         // Fill delete modal with user data
-        $('#deleteUserModal').on('show.bs.modal', function(event) {
-            var button = $(event.relatedTarget);
-            var user_id = button.data('user_id');
+        $('#deleteUserModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget); // Button that triggered the modal
+            var userId = button.data('id');
             var username = button.data('username');
+
             var modal = $(this);
-            modal.find('.modal-body #user_id').val(user_id);
-            modal.find('.modal-body #username').val(username);
+            modal.find('#user_id').val(userId);
+            modal.find('#username').val(username);
+
+            // Update form action URL dynamically with the correct user id
+            var form = modal.find('#deleteUserForm');
+            var action = "{{ url('users') }}/" + userId;
+            form.attr('action', action);
         });
+
     </script>
 @endsection

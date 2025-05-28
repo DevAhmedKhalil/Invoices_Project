@@ -6,124 +6,101 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
-    /**
-     * Display a listing of the users.
-     */
     public function index()
     {
         $users = User::with('roles')->get();
         return view('users.index', compact('users'));
     }
 
-    /**
-     * Show the form for creating a new user.
-     */
     public function create()
     {
-        $roles = Role::pluck('name', 'id');
+        $roles = Role::pluck('name')->all(); // نستخدم اسم الدور فقط
         return view('users.create', compact('roles'));
     }
 
-    /**
-     * Store a newly created user in storage.
-     */
     public function store(Request $request)
     {
-        // Validate input data
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|same:confirm-password',
-            'roles' => 'required|array'
+            'password' => 'required|string|min:6|same:confirm-password',
+            'confirm-password' => 'required|string|min:6',
+            'status' => 'required|in:مفعل,غير مفعل',
+            'roles' => 'required|array|min:1'
         ]);
 
-        // Prepare input and hash password
-        $input = $request->all();
-        $input['password'] = Hash::make($input['password']);
+        // استخرج فقط الحقول المسموح بها
+        $data = $request->only(['name', 'email', 'password', 'status']);
+        $data['password'] = Hash::make($data['password']);
 
-        // Create user
-        $user = User::create($input);
+        $user = User::create($data);
 
-        // Assign roles to the user
+        // أضف الصلاحيات للمستخدم
         $user->assignRole($request->input('roles'));
 
-        return redirect()->route('users.index')
-            ->with('success', 'User created successfully.');
+        return redirect()->route('users.index')->with('notif', [
+            'msg' => 'تم إنشاء المستخدم بنجاح',
+            'type' => 'success'
+        ]);
     }
 
-    /**
-     * Display the specified user.
-     */
     public function show($id)
     {
         $user = User::findOrFail($id);
         return view('users.show', compact('user'));
     }
 
-    /**
-     * Show the form for editing the specified user.
-     */
     public function edit($id)
     {
-        // Retrieve user
         $user = User::findOrFail($id);
+        $roles = Role::pluck('name')->all();
+        $userRoles = $user->roles->pluck('name')->toArray();
 
-        // Get all available roles
-        $roles = Role::pluck('name', 'id');
-
-        // Get current user's roles (by ID)
-        $userRole = $user->roles->pluck('id')->toArray();
-
-        return view('users.edit', compact('user', 'roles', 'userRole'));
+        return view('users.edit', compact('user', 'roles', 'userRoles'));
     }
 
-    /**
-     * Update the specified user in storage.
-     */
     public function update(Request $request, $id)
     {
-        // Validate input
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $id,
-            'password' => 'nullable|same:confirm-password',
-            'roles' => 'required|array'
+            'password' => 'nullable|string|min:6|same:confirm-password',
+            'confirm-password' => 'nullable|string|min:6',
+            'status' => 'required|in:مفعل,غير مفعل',
+            'roles' => 'required|array|min:1'
         ]);
 
-        // Get user
         $user = User::findOrFail($id);
 
-        // Prepare data
-        $input = $request->all();
-
-        // If password is provided, hash it
-        if (!empty($input['password'])) {
-            $input['password'] = Hash::make($input['password']);
+        // استخرج فقط الحقول المسموح بها
+        $data = $request->only(['name', 'email', 'password', 'status']);
+        if (!empty($data['password'])) {
+            $data['password'] = Hash::make($data['password']);
         } else {
-            unset($input['password']); // Don't update password if not provided
+            unset($data['password']);
         }
 
-        // Update user
-        $user->update($input);
+        $user->update($data);
 
-        // Sync roles
+        // حدث الصلاحيات
         $user->syncRoles($request->input('roles'));
 
-        return redirect()->route('users.index')
-            ->with('success', 'User updated successfully.');
+        return redirect()->route('users.index')->with('notif', [
+            'msg' => 'تم تعديل المستخدم بنجاح',
+            'type' => 'success'
+        ]);
     }
 
-    /**
-     * Remove the specified user from storage.
-     */
     public function destroy($id)
     {
         User::findOrFail($id)->delete();
-        return redirect()->route('users.index')
-            ->with('success', 'User deleted successfully.');
+
+        return redirect()->route('users.index')->with('notif', [
+            'msg' => 'تم حذف المستخدم بنجاح',
+            'type' => 'success'
+        ]);
     }
 }
