@@ -141,8 +141,9 @@
                                                 data-target="#deleteUserModal"
                                                 data-id="{{ $user->id }}"
                                                 data-username="{{ $user->name }}"
+                                                title="حذف"
                                             >
-                                                حذف
+                                                <i class="las la-trash"></i>
                                             </button>
                                         @endcan
                                     </td>
