@@ -255,10 +255,9 @@
             <!-- row closed -->
 
             <!-- Change Status Modal -->
-            <div class="modal fade" id="statusModal" tabindex="-1" role="dialog" aria-labelledby="statusModalLabel"
-                 aria-hidden="true">
+            <div class="modal fade" id="statusModal" tabindex="-1" role="dialog" aria-labelledby="statusModalLabel" aria-hidden="true">
                 <div class="modal-dialog" role="document">
-                    <form method="POST" action="{{ route('invoice.updateStatus', $invoice->id) }}">
+                    <form method="POST" id="statusForm" action="">
                         @csrf
                         <input type="hidden" name="invoice_id" id="modal_invoice_id">
                         <div class="modal-content">
@@ -426,17 +425,17 @@
 
             <script>
                 $('#statusModal').on('show.bs.modal', function (event) {
-                    var button = $(event.relatedTarget);
-                    var invoiceId = button.data('id');
-                    var status = button.data('status');
-                    var invoiceNumber = button.data('invoice_number');
-                    var updatedAt = button.data('last_updated');
+                    let button = $(event.relatedTarget); // الزر الذي فتح المودال
+                    let invoiceId = button.data('id');
+                    let invoiceNumber = button.data('invoice_number');
 
-                    var modal = $(this);
-                    modal.find('#modal_invoice_id').val(invoiceId);
-                    modal.find('#modal_invoice_number').text(invoiceNumber);
-                    modal.find('#modal_status').val(status);
-                    modal.find('#modal_updated_at').val(updatedAt ? updatedAt.split('T')[0] : '');
+                    // تحديث الحقول داخل المودال
+                    $('#modal_invoice_id').val(invoiceId);
+                    $('#modal_invoice_number').text(invoiceNumber);
+
+                    // تحديث رابط الإرسال في الفورم
+                    let url = '/invoice/update-status/' + invoiceId; // غير هذا إذا كان المسار مختلفاً
+                    $('#statusForm').attr('action', url);
                 });
             </script>
 
