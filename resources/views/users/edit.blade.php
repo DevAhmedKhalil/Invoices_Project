@@ -92,7 +92,7 @@
                                     <strong>نوع المستخدم</strong>
                                     <select name="roles[]" class="form-control" multiple>
                                         @foreach($roles as $id => $name)
-                                            <option value="{{ $id }}" {{ in_array($id, $userRole) ? 'selected' : '' }}>
+                                            <option value="{{ $id }}" {{ in_array($id, $userRoles) ? 'selected' : '' }}>
                                                 {{ $name }}
                                             </option>
                                         @endforeach
