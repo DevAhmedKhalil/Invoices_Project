@@ -96,16 +96,21 @@
             <div class="card mg-b-20">
                 <div class="card-header pb-0">
                     <div class="d-flex justify-content-center mt-3">
-                        <div class="mx-2">
-                            <a class="btn btn-outline-primary" href="{{ route('invoice.create') }}">
-                                ➕ إضافة فاتورة
-                            </a>
-                        </div>
-                        <div class="mx-2">
-                            <a class="btn btn-outline-success" href="{{ route('invoices.export') }}">
-                                📥 تصدير Excel
-                            </a>
-                        </div>
+                        @can('اضافة فاتورة')
+                            <div class="mx-2">
+                                <a class="btn btn-outline-primary" href="{{ route('invoice.create') }}">
+                                    ➕ إضافة فاتورة
+                                </a>
+                            </div>
+                        @endcan
+
+                        @can('تصدير EXCEL')
+                            <div class="mx-2">
+                                <a class="btn btn-outline-success" href="{{ route('invoices.export') }}">
+                                    📥 تصدير Excel
+                                </a>
+                            </div>
+                        @endcan
                     </div>
 
 
@@ -150,7 +155,11 @@
                                             <div class="sticky-cell">{{ $invoice->product->product_name }}</div>
                                         </td>
                                         <td>
-                                            <a href="{{ url('invoices-details') }}/{{ $invoice->id }}">{{ $invoice->section->section_name }}</a>
+                                            @can('عرض فاتورة')
+                                                <a href="{{ url('invoices-details') }}/{{ $invoice->id }}">{{ $invoice->section->section_name }}</a>
+                                            @else
+                                                {{ $invoice->section->section_name }}
+                                            @endcan
                                         </td>
                                         <td>
                                             <div class="sticky-cell">{{ $invoice->discount }}%</div>
@@ -196,45 +205,55 @@
                                                      aria-labelledby="dropdownMenuButton{{ $invoice->id }}">
 
                                                     {{-- Edit --}}
-                                                    <a class="dropdown-item text-info"
-                                                       href="{{ route('invoices.edit', $invoice->id) }}">
-                                                        <i class="las la-pen"></i> تعديل
-                                                    </a>
+                                                    @can('تعديل فاتورة')
+                                                        <a class="dropdown-item text-info"
+                                                           href="{{ route('invoices.edit', $invoice->id) }}">
+                                                            <i class="las la-pen"></i> تعديل
+                                                        </a>
+                                                    @endcan
 
                                                     {{-- Soft Delete --}}
-                                                    <button class="dropdown-item text-secondary"
-                                                            data-toggle="modal"
-                                                            data-target="#deleteModal"
-                                                            data-id="{{ $invoice->id }}"
-                                                            data-invoice_number="{{ $invoice->invoice_number }}">
-                                                        <i class="las la-archive"></i> أرشفة
-                                                    </button>
+                                                    @can('ارشفة الفاتورة')
+                                                        <button class="dropdown-item text-secondary"
+                                                                data-toggle="modal"
+                                                                data-target="#deleteModal"
+                                                                data-id="{{ $invoice->id }}"
+                                                                data-invoice_number="{{ $invoice->invoice_number }}">
+                                                            <i class="las la-archive"></i> أرشفة
+                                                        </button>
+                                                    @endcan
 
                                                     {{-- Force Delete --}}
-                                                    <button class="dropdown-item text-danger"
-                                                            data-toggle="modal"
-                                                            data-target="#forceDeleteModal"
-                                                            data-id="{{ $invoice->id }}"
-                                                            data-invoice_number="{{ $invoice->invoice_number }}">
-                                                        <i class="las la-times-circle"></i> حذف نهائي
-                                                    </button>
+                                                    @can('حذف فاتورة')
+                                                        <button class="dropdown-item text-danger"
+                                                                data-toggle="modal"
+                                                                data-target="#forceDeleteModal"
+                                                                data-id="{{ $invoice->id }}"
+                                                                data-invoice_number="{{ $invoice->invoice_number }}">
+                                                            <i class="las la-times-circle"></i> حذف نهائي
+                                                        </button>
+                                                    @endcan
 
                                                     {{-- Change Status --}}
-                                                    <button class="dropdown-item text-warning"
-                                                            data-toggle="modal"
-                                                            data-target="#statusModal"
-                                                            data-id="{{ $invoice->id }}"
-                                                            data-status="{{ $invoice->status }}"
-                                                            data-invoice_number="{{ $invoice->invoice_number }}"
-                                                            data-last_updated="{{ $invoice->updated_at }}">
-                                                        <i class="las la-sync"></i> تغيير حالة الفاتورة
-                                                    </button>
+                                                    @can('تغير حالة الدفع')
+                                                        <button class="dropdown-item text-warning"
+                                                                data-toggle="modal"
+                                                                data-target="#statusModal"
+                                                                data-id="{{ $invoice->id }}"
+                                                                data-status="{{ $invoice->status }}"
+                                                                data-invoice_number="{{ $invoice->invoice_number }}"
+                                                                data-last_updated="{{ $invoice->updated_at }}">
+                                                            <i class="las la-sync"></i> تغيير حالة الفاتورة
+                                                        </button>
+                                                    @endcan
 
-                                                    <a class="dropdown-item text-primary"
-                                                       href="{{ route('invoice.print', $invoice->id) }}"
-                                                       target="_blank">
-                                                        <i class="las la-print"></i> طباعة
-                                                    </a>
+                                                    @can('طباعةالفاتورة')
+                                                        <a class="dropdown-item text-primary"
+                                                           href="{{ route('invoice.print', $invoice->id) }}"
+                                                           target="_blank">
+                                                            <i class="las la-print"></i> طباعة
+                                                        </a>
+                                                    @endcan
 
 
                                                     <button class="btn btn-sm btn-outline-light w-100"
@@ -255,112 +274,118 @@
             <!-- row closed -->
 
             <!-- Change Status Modal -->
-            <div class="modal fade" id="statusModal" tabindex="-1" role="dialog" aria-labelledby="statusModalLabel" aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                    <form method="POST" id="statusForm" action="">
-                        @csrf
-                        <input type="hidden" name="invoice_id" id="modal_invoice_id">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">تغيير حالة الفاتورة</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="إغلاق">
+            @can('تغير حالة الدفع')
+                <div class="modal fade" id="statusModal" tabindex="-1" role="dialog" aria-labelledby="statusModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <form method="POST" id="statusForm" action="">
+                            @csrf
+                            <input type="hidden" name="invoice_id" id="modal_invoice_id">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">تغيير حالة الفاتورة</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="إغلاق">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <p><strong>رقم الفاتورة:</strong> <span id="modal_invoice_number"></span></p>
+
+                                    <div class="form-group">
+                                        <label for="status">الحالة الجديدة</label>
+                                        <select name="status" class="form-control" required>
+                                            <option value="paid">مدفوعة</option>
+                                            <option value="unpaid">غير مدفوعة</option>
+                                            <option value="partial">مدفوعة جزئياً</option>
+                                            <option value="overdue">متأخرة</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="payment_date">تاريخ التعديل</label>
+                                        <input type="date" name="payment_date" class="form-control"
+                                               value="{{ now()->toDateString() }}">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="note">ملاحظات</label>
+                                        <textarea name="note" class="form-control" rows="3"
+                                                  placeholder="أدخل ملاحظاتك هنا..."></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button type="submit" class="btn btn-success">حفظ التغييرات</button>
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">إلغاء</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            @endcan
+
+            <!-- Force Delete Modal -->
+            @can('حذف فاتورة')
+                <div class="modal" id="forceDeleteModal">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content modal-content-demo">
+                            <div class="modal-header bg-danger text-white">
+                                <h6 class="modal-title text-white">حذف نهائي للفاتورة</h6>
+                                <button aria-label="Close" class="close text-white" data-dismiss="modal" type="button">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
-                            <div class="modal-body">
-                                <p><strong>رقم الفاتورة:</strong> <span id="modal_invoice_number"></span></p>
 
-                                <div class="form-group">
-                                    <label for="status">الحالة الجديدة</label>
-                                    <select name="status" class="form-control" required>
-                                        <option value="paid">مدفوعة</option>
-                                        <option value="unpaid">غير مدفوعة</option>
-                                        <option value="partial">مدفوعة جزئياً</option>
-                                        <option value="overdue">متأخرة</option>
-                                    </select>
+                            <form id="forceDeleteForm" method="post">
+                                @csrf
+                                @method("DELETE")
+                                <div class="modal-body">
+                                    <p class="text-danger font-weight-bold">
+                                        ⚠️ هل أنت متأكد أنك تريد حذف هذه الفاتورة بشكل نهائي؟ لا يمكن التراجع عن هذا
+                                        الإجراء.
+                                    </p>
+                                    <input type="hidden" name="id" id="force_id" value="">
+                                    <input class="form-control" name="invoice_number" id="force_invoice_number" type="text"
+                                           readonly>
                                 </div>
-
-                                <div class="form-group">
-                                    <label for="payment_date">تاريخ التعديل</label>
-                                    <input type="date" name="payment_date" class="form-control"
-                                           value="{{ now()->toDateString() }}">
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">إلغاء</button>
+                                    <button type="submit" class="btn btn-danger">حذف نهائي</button>
                                 </div>
-
-                                <div class="form-group">
-                                    <label for="note">ملاحظات</label>
-                                    <textarea name="note" class="form-control" rows="3"
-                                              placeholder="أدخل ملاحظاتك هنا..."></textarea>
-                                </div>
-                            </div>
-
-                            <div class="modal-footer">
-                                <button type="submit" class="btn btn-success">حفظ التغييرات</button>
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">إلغاء</button>
-                            </div>
+                            </form>
                         </div>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Force Delete Modal -->
-            <div class="modal" id="forceDeleteModal">
-                <div class="modal-dialog modal-dialog-centered" role="document">
-                    <div class="modal-content modal-content-demo">
-                        <div class="modal-header bg-danger text-white">
-                            <h6 class="modal-title text-white">حذف نهائي للفاتورة</h6>
-                            <button aria-label="Close" class="close text-white" data-dismiss="modal" type="button">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-
-                        <form id="forceDeleteForm" method="post">
-                            @csrf
-                            @method("DELETE")
-                            <div class="modal-body">
-                                <p class="text-danger font-weight-bold">
-                                    ⚠️ هل أنت متأكد أنك تريد حذف هذه الفاتورة بشكل نهائي؟ لا يمكن التراجع عن هذا
-                                    الإجراء.
-                                </p>
-                                <input type="hidden" name="id" id="force_id" value="">
-                                <input class="form-control" name="invoice_number" id="force_invoice_number" type="text"
-                                       readonly>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">إلغاء</button>
-                                <button type="submit" class="btn btn-danger">حذف نهائي</button>
-                            </div>
-                        </form>
                     </div>
                 </div>
-            </div>
+            @endcan
             <!-- End Force Delete Modal -->
 
             <!-- Delete modal [Archived] -->
-            <div class="modal" id="deleteModal">
-                <div class="modal-dialog modal-dialog-centered" role="document">
-                    <div class="modal-content modal-content-demo">
-                        <div class="modal-header">
-                            <h6 class="modal-title">ارشفة المنتج</h6>
-                            <button aria-label="Close" class="close" data-dismiss="modal"
-                                    type="button"><span aria-hidden="true">&times;</span></button>
+            @can('ارشفة الفاتورة')
+                <div class="modal" id="deleteModal">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content modal-content-demo">
+                            <div class="modal-header">
+                                <h6 class="modal-title">ارشفة المنتج</h6>
+                                <button aria-label="Close" class="close" data-dismiss="modal"
+                                        type="button"><span aria-hidden="true">&times;</span></button>
+                            </div>
+                            <form id="deleteForm" method="post">
+                                @method("DELETE")
+                                @csrf
+                                <div class="modal-body">
+                                    <p>هل انت متاكد من عملية الارشفة ؟</p><br>
+                                    <input type="hidden" name="id" id="id" value="">
+                                    <input class="form-control" name="invoice_name" id="invoice_name" type="text"
+                                           readonly>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">الغاء</button>
+                                    <button type="submit" class="btn btn-danger">تاكيد</button>
+                                </div>
+                            </form>
                         </div>
-                        <form id="deleteForm" method="post">
-                            @method("DELETE")
-                            @csrf
-                            <div class="modal-body">
-                                <p>هل انت متاكد من عملية الارشفة ؟</p><br>
-                                <input type="hidden" name="id" id="id" value="">
-                                <input class="form-control" name="invoice_name" id="invoice_name" type="text"
-                                       readonly>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">الغاء</button>
-                                <button type="submit" class="btn btn-danger">تاكيد</button>
-                            </div>
-                        </form>
                     </div>
                 </div>
-            </div>
+            @endcan
             <!--End Delete modal -->
 
         </div>

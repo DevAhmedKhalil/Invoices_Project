@@ -39,7 +39,7 @@ class UserController extends Controller
         $user = User::create($data);
 
         // أضف الصلاحيات للمستخدم
-        $user->assignRole($request->input('roles'));
+        $user->syncRoles($request->input('roles'));
 
         return redirect()->route('users.index')->with('notif', [
             'msg' => 'تم إنشاء المستخدم بنجاح',
@@ -56,8 +56,8 @@ class UserController extends Controller
     public function edit($id)
     {
         $user = User::findOrFail($id);
-        $roles = Role::pluck('name')->all();
-        $userRoles = $user->roles->pluck('name')->toArray();
+        $roles = Role::pluck('name')->all();  // تجيب كل أسماء الأدوار كمصفوفة
+        $userRoles = $user->roles->pluck('name')->toArray(); // تجيب أسماء الأدوار الخاصة بالمستخدم الحالي
 
         return view('users.edit', compact('user', 'roles', 'userRoles'));
     }

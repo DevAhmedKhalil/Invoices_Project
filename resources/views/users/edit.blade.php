@@ -78,8 +78,8 @@
                         <div class="row row-sm mg-b-20">
                             <div class="col-lg-6">
                                 <label class="form-label">حالة المستخدم</label>
-                                <select name="Status" class="form-control nice-select custom-select">
-                                    <option value="{{ $user->Status }}">{{ $user->Status }}</option>
+                                <select name="status" class="form-control nice-select custom-select">
+{{--                                    <option value="{{ $user->status }}">{{ $user->status }}</option>--}}
                                     <option value="مفعل">مفعل</option>
                                     <option value="غير مفعل">غير مفعل</option>
                                 </select>
@@ -91,11 +91,17 @@
                                 <div class="form-group">
                                     <strong>نوع المستخدم</strong>
                                     <select name="roles[]" class="form-control" multiple>
-                                        @foreach($roles as $id => $name)
-                                            <option value="{{ $id }}" {{ in_array($id, $userRoles) ? 'selected' : '' }}>
+{{--                                        @foreach($roles as $id => $name)--}}
+{{--                                            <option value="{{ $id }}" {{ in_array($id, $userRoles) ? 'selected' : '' }}>--}}
+{{--                                                {{ $name }}--}}
+{{--                                            </option>--}}
+{{--                                        @endforeach--}}
+                                        @foreach($roles as $name)
+                                            <option value="{{ $name }}" {{ in_array($name, $userRoles) ? 'selected' : '' }}>
                                                 {{ $name }}
                                             </option>
                                         @endforeach
+
                                     </select>
                                 </div>
                             </div>
