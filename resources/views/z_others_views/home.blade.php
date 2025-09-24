@@ -1,7 +1,7 @@
 @extends('layouts.master')
 
 @section("title")
-    لوحة التحكم- برنامج الفواتير
+    لوحة التحكم - برنامج الفواتير
 @endsection
 
 @section('css')
@@ -10,6 +10,7 @@
     <!-- Maps css -->
     <link href="{{URL::asset('assets/plugins/jqvmap/jqvmap.min.css')}}" rel="stylesheet">
 @endsection
+
 @section('page-header')
     <!-- breadcrumb -->
     <div class="breadcrumb-header justify-content-between">
@@ -40,6 +41,7 @@
     </div>
     <!-- /breadcrumb -->
 @endsection
+
 @section('content')
     <!-- row -->
     <div class="row row-sm">
