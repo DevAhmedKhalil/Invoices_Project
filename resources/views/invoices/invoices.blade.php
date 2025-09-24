@@ -242,7 +242,8 @@
                                                                 data-id="{{ $invoice->id }}"
                                                                 data-status="{{ $invoice->status }}"
                                                                 data-invoice_number="{{ $invoice->invoice_number }}"
-                                                                data-last_updated="{{ $invoice->updated_at }}">
+                                                                data-last_updated="{{ $invoice->updated_at }}"
+                                                                data-action="{{ route('invoice.updateStatus', $invoice->id) }}">
                                                             <i class="las la-sync"></i> تغيير حالة الفاتورة
                                                         </button>
                                                     @endcan
@@ -450,16 +451,15 @@
 
             <script>
                 $('#statusModal').on('show.bs.modal', function (event) {
-                    let button = $(event.relatedTarget); // الزر الذي فتح المودال
+                    let button = $(event.relatedTarget);
                     let invoiceId = button.data('id');
                     let invoiceNumber = button.data('invoice_number');
 
-                    // تحديث الحقول داخل المودال
                     $('#modal_invoice_id').val(invoiceId);
                     $('#modal_invoice_number').text(invoiceNumber);
 
-                    // تحديث رابط الإرسال في الفورم
-                    let url = '/invoice/update-status/' + invoiceId; // غير هذا إذا كان المسار مختلفاً
+                    // استخدام route helper
+                    let url = "{{ route('invoice.updateStatus', ':id') }}".replace(':id', invoiceId);
                     $('#statusForm').attr('action', url);
                 });
             </script>
